@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/help_buttonn"
+            android:contentDescription="helper"
+            android:scaleType="fitCenter"
+            android:src="@drawable/helper" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/call911"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Llamar al 911" />
+
+            <Button
+                android:id="@+id/callSP"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Llamar a Seguridad Pública" />
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
