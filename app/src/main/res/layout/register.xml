@@ -33,12 +33,17 @@
             android:layout_height="200dp"
             app:srcCompat="@drawable/logo" />
 
+        <View
+            android:id="@+id/view4"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+
         <EditText
             android:id="@+id/editTextText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Ingresa tu usuario"
+            android:hint="Ingresa tu(s) Nombre(s)"
             android:inputType="text"
             android:textAlignment="viewStart"
             android:textColor="#000000"
@@ -50,11 +55,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Ingresa tu contraseña"
+            android:hint="Ingresa tu primer apellido"
             android:inputType="textPassword"
             android:textColor="#000000"
             android:textSize="24sp"
             android:textStyle="italic" />
+
+        <EditText
+            android:id="@+id/editTextPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Ingresa tu numero de telefono"
+            android:inputType="phone"
+            android:textSize="24sp" />
+
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cargarImgBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:onClick="cargarImagen"
+            android:text="Cargar Imagen"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/contactsBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Registrar contacto"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registrar"
+        android:textSize="18sp" />
 
 </LinearLayout>
