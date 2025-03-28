@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/nombreCE"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -16,7 +16,7 @@
         android:textSize="24sp" />
 
     <EditText
-        android:id="@+id/editTextPhone2"
+        android:id="@+id/telefonoCE"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:ems="10"
@@ -37,6 +37,7 @@
         android:textSize="24sp" />
 
     <RadioGroup
+        android:id="@+id/radioGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -82,11 +83,5 @@
             android:text="Otro"
             android:textSize="18sp" />
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar Contacto"
-            android:textSize="20sp" />
     </RadioGroup>
 </LinearLayout>

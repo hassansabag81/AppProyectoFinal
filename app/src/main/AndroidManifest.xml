@@ -26,7 +26,6 @@
         <activity
             android:name=".register_user"
             android:exported="true"
-            android:label="@string/title_activity_menu2"
             android:theme="@style/Theme.AppProyectoFinal.NoActionBar">
 
             <intent-filter>
@@ -35,6 +34,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MenuActivity2"
+            android:exported="true"
+            android:label="@string/title_activity_menu2"
+            android:theme="@style/Theme.AppProyectoFinal.NoActionBar"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true" >

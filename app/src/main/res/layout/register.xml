@@ -39,7 +39,7 @@
             android:layout_height="30dp" />
 
         <EditText
-            android:id="@+id/editTextText2"
+            android:id="@+id/nombreUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -51,18 +51,19 @@
             android:textStyle="italic" />
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/apellidoUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Ingresa tu primer apellido"
-            android:inputType="textPassword"
+            android:inputType="text"
+            android:textAlignment="viewStart"
             android:textColor="#000000"
             android:textSize="24sp"
             android:textStyle="italic" />
 
         <EditText
-            android:id="@+id/editTextPhone"
+            android:id="@+id/telefonoUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -95,7 +96,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/registrarUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Registrar"
