@@ -33,6 +33,7 @@ public class register_user extends AppCompatActivity {
         telefonoUser = (EditText) findViewById(R.id.telefonoUser);
         dialog(register_user.this);
 
+
         registrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
