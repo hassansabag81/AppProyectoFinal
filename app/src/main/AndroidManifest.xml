@@ -2,9 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+
 
     <application
         android:name=".App"
@@ -18,9 +27,8 @@
         android:theme="@style/Theme.AppProyectoFinal"
         tools:targetApi="31" >
         <activity
-            android:name=".MenuActivity2"
+            android:name=".register_user"
             android:exported="true"
-            android:label="@string/title_activity_menu2"
             android:theme="@style/Theme.AppProyectoFinal.NoActionBar">
 
             <intent-filter>
@@ -29,6 +37,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MenuActivity2"
+            android:exported="true"
+            android:label="@string/title_activity_menu2"
+            android:theme="@style/Theme.AppProyectoFinal.NoActionBar"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true" >

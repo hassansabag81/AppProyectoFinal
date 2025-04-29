@@ -16,7 +16,7 @@ import com.example.appproyectofinal.databinding.ActivityMenu2Binding;
 public class MenuActivity2 extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-private ActivityMenu2Binding binding;
+    private ActivityMenu2Binding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

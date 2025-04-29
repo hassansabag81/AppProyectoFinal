@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
     android:orientation="vertical">
 
     <LinearLayout
@@ -12,49 +11,136 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/vast_shadow"
-            android:text="Registro"
-            android:textAlignment="center"
-            android:textColor="#E8E8E8"
-            android:textSize="34sp" />
-
         <View
-            android:id="@+id/view"
+            android:id="@+id/view6"
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="10dp" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            app:srcCompat="@drawable/logo" />
+            app:srcCompat="@drawable/sorora" />
 
-        <EditText
-            android:id="@+id/editTextText2"
+        <TextView
+            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Ingresa tu usuario"
-            android:inputType="text"
-            android:textAlignment="viewStart"
-            android:textColor="#000000"
-            android:textSize="24sp"
-            android:textStyle="italic" />
+            android:fontFamily="@font/agbalumo"
+            android:text="Registro"
+            android:textAlignment="center"
+            android:textColor="#673AB7"
+            android:textSize="48sp" />
 
-        <EditText
-            android:id="@+id/editTextTextPassword"
+        <View
+            android:id="@+id/view4"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nombreUserLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Ingresa tu contraseña"
-            android:inputType="textPassword"
-            android:textColor="#000000"
-            android:textSize="24sp"
-            android:textStyle="italic" />
+            android:hint="Ingresa tu Nombre">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nombreUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:inputType="text"
+                android:textColorHint="#B3000000"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/apellidoUserLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingresa tu primer apellido">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/apellidoUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:inputType="text"
+                android:textColorHint="#B3000000"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/telefonoUserLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingresa tu numero de telefono">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/telefonoUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:inputType="phone"
+                android:textColorHint="#B3000000"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cargarImgBtn"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/botones"
+            android:onClick="cargarImagen"
+            android:text="Cargar Imagen"
+            android:textSize="16sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/contactsBtn"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:background="@drawable/botones"
+            android:text="Registrar contacto"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/termsConditions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="He leído y acepto los términos y condiciones de Sorora." />
+
+    <View
+        android:id="@+id/view5"
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/registrarUser"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/botones"
+        android:text="Registrar"
+        android:textSize="16sp" />
 
 </LinearLayout>
