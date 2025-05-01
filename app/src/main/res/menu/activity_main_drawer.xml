@@ -10,6 +10,11 @@
             android:title="Inicio" />
 
         <item
+            android:id="@+id/contactos"
+            android:icon="@drawable/contact"
+            android:title="Contactos" />
+
+        <item
             android:id="@+id/informacion"
             android:icon="@drawable/info"
             android:title="Informacion" />
