@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sorora nos comprometemos a la seguridad de nuestros usuarios asi como de la proteccion de sus datos personales. Por lo que en Sorora S.A de C.V .com.mx recopilamos, usamos y protegemos la siguiente informacion que el usuario proprciona en la aplicacion. 1. Información que recopilamos  Recopilamos la siguiente información cuando utilizas nuestra aplicación:  Datos personales: nombre, apellido, número de teléfono.  Contactos de emergencia: nombres, apellidos, números de teléfono y la relación con el usuario.  Datos de ubicación: acceso a tu ubicación geográfica en tiempo real.  Fotografías: puedes tomar fotos o subir imágenes desde tu galería, que pueden ser almacenadas en la aplicación para su uso en alertas de emergencia.  Además, si utilizas los botones de acceso directo a llamadas de emergencia (911 y seguridad pública), podemos registrar la interacción para fines de servicio y mejora.  2. Finalidad del uso de tus datos  Los datos que recopilamos se utilizan con los siguientes fines:  Alertas de emergencia: Enviar notificaciones a tus contactos de emergencia y números de seguridad pública en caso de que mantengas presionado el botón de alerta.  Prevención y atención de la violencia: Para ofrecerte servicios adecuados en situaciones de riesgo y garantizar tu seguridad mediante el uso de tu ubicación y contacto con autoridades.  Mejorar la aplicación: Analizar el uso de la aplicación para mejorar su funcionamiento y desempeño.  3. Uso de la ubicación geográfica  Accedemos a tu ubicación en tiempo real para enviar alertas precisas a tus contactos de emergencia y a las autoridades en situaciones de emergencia. Este acceso se realizará solo cuando estés utilizando la aplicación y hayas dado tu consentimiento explícito.  4. Compartir y almacenar la información  No compartimos tus datos personales con terceros, excepto cuando sea necesario para cumplir con las alertas de emergencia (por ejemplo, notificaciones a contactos registrados y a las autoridades). Tu información será almacenada de forma segura en nuestros servidores y se eliminará cuando ya no sea necesaria para los fines mencionados en este Aviso.  5. Seguridad de tus datos  Implementamos medidas de seguridad administrativas, técnicas y físicas para proteger tus datos personales contra el acceso no autorizado, alteración, divulgación o destrucción.  6. Derechos ARCO  Tienes derecho a Acceder, Rectificar, Cancelar o Oponerte al tratamiento de tus datos personales. Si deseas ejercer estos derechos o tienes alguna pregunta sobre el tratamiento de tus datos, por favor contáctanos a claudiasheinbaum4t@chocolatebienestar.com.  7. Cambios en el Aviso de Privacidad  Nos reservamos el derecho de actualizar este Aviso de Privacidad en cualquier momento. Las modificaciones se publicarán en esta misma página con la fecha de actualización correspondiente. Te recomendamos revisar regularmente este aviso. " />
+
+    </LinearLayout>
+
+</ScrollView>

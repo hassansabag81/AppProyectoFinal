@@ -1,6 +1,9 @@
 package com.example.appproyectofinal;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import com.google.android.material.snackbar.Snackbar;
@@ -51,6 +54,30 @@ public class MenuActivity2 extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_activity2, menu);
         return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        if(id == R.id.termsConditions){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity2.this);
+            builder.setTitle("Terminos y condiciones");
+            LayoutInflater inflater = LayoutInflater.from(MenuActivity2.this);
+            View dialogView = inflater.inflate(R.layout.terms_conditions, null);
+            builder.setView(dialogView);
+            builder.setPositiveButton("Cerrar", null);
+            builder.show();
+            return true;
+        }else if(id == R.id.privacity){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity2.this);
+            builder.setTitle("Aviso de Privacidad");
+            LayoutInflater inflater = LayoutInflater.from(MenuActivity2.this);
+            View dialogView = inflater.inflate(R.layout.privacity, null);
+            builder.setView(dialogView);
+            builder.setPositiveButton("Cerrar", null);
+            builder.show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
