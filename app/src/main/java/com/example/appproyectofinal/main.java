@@ -203,7 +203,7 @@ public class main extends Fragment {
                 .addOnSuccessListener(requireActivity(), location -> {
                     if (location != null) {
                         String loc = "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude();
-                        sendEmergencyCall("8713789035", loc);
+                        sendSmsToEmergencyContact("8713789035", loc);
                     } else {
                         // Si es null, pedimos actualización activa
                         LocationRequest locationRequest = LocationRequest.create()
@@ -217,9 +217,9 @@ public class main extends Fragment {
                                 Location updatedLocation = locationResult.getLastLocation();
                                 if (updatedLocation != null) {
                                     String loc = "Lat: " + updatedLocation.getLatitude() + ", Lon: " + updatedLocation.getLongitude();
-                                    sendEmergencyCall("8713789035", loc);
+                                    sendSmsToEmergencyContact("8713789035", loc);
                                 } else {
-                                    Toast.makeText(getContext(), "No se pudo obtener la ubicación (forzada)", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }, Looper.getMainLooper());
@@ -227,21 +227,12 @@ public class main extends Fragment {
                 });
     }
 
-    // Método para simular el envío de un mensaje con la ubicación a un número de emergencia
-    private void sendEmergencyCall(String phoneNumber, String location) {
-        // Emisión de una llamada (simulada) al número de emergencia
-        Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:" + phoneNumber));
-        startActivity(intent);
-
-        // Mostrar el mensaje de la ubicación
-        String message = "Estoy en emergencia, mi ubicación es: " + location;
-        sendSmsToEmergencyContact(phoneNumber, message);
-    }
-
     // Método para enviar un SMS (simulado) a un número de emergencia con la ubicación
-    private void sendSmsToEmergencyContact(String phoneNumber, String message) {
+    private void sendSmsToEmergencyContact(String phoneNumber, String location) {
+        String message = "Estoy en una emergencia, mi ubicación es: " + location;
+
         Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phoneNumber));
+
         smsIntent.putExtra("sms_body", message);
         startActivity(smsIntent);
     }
