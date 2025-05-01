@@ -104,11 +104,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="25dp"
+        android:paddingRight="5dp">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/cargarImgBtn"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="50dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/botones"
@@ -118,12 +120,17 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/contactsBtn"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="50dp"
             android:background="@drawable/botones"
             android:text="Registrar contacto"
             android:textSize="16sp" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/view10"
+        android:layout_width="match_parent"
+        android:layout_height="15dp" />
 
     <CheckBox
         android:id="@+id/termsConditions"
@@ -138,9 +145,12 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/registrarUser"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="50dp"
+        android:layout_gravity="center"
         android:background="@drawable/botones"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:text="Registrar"
         android:textSize="16sp" />
 

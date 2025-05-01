@@ -31,17 +31,24 @@
 
             <Button
                 android:id="@+id/call911"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="250dp"
+                android:layout_height="85dp"
                 android:layout_marginTop="10dp"
-                android:text="Llamar al 911" />
+                android:text="Llamar al 911"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/view7"
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
 
             <Button
                 android:id="@+id/callSP"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="250dp"
+                android:layout_height="85dp"
                 android:layout_marginTop="10dp"
-                android:text="Llamar a Seguridad Pública" />
+                android:text="Llamar a Seguridad Pública"
+                android:textSize="20sp" />
 
         </LinearLayout>
     </LinearLayout>

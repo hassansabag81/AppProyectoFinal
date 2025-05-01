@@ -52,7 +52,7 @@ public class register_user extends AppCompatActivity {
                 LayoutInflater inflater = LayoutInflater.from(register_user.this);
                 View dialogView = inflater.inflate(R.layout.terms_conditions, null);
                 builder.setView(dialogView);
-                builder.setPositiveButton("Cerrar", null);
+                builder.setPositiveButton("Aceptar", null);
                 builder.show();
             }
         };
