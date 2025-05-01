@@ -54,12 +54,6 @@
             android:label="@string/title_activity_menu2"
             android:theme="@style/Theme.AppProyectoFinal.NoActionBar"/>
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="true" >
-
-        </activity>
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
