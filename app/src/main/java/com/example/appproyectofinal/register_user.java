@@ -2,6 +2,7 @@ package com.example.appproyectofinal;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,8 +21,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
 
 public class register_user extends AppCompatActivity {
+
+    private static final int PERMISSION_REQUEST_CODE = 1001;
     ImageView imagen;
     Button contacto, registrar;
     EditText nameUser, lastnameUser, telefonoUser;
@@ -76,6 +83,32 @@ public class register_user extends AppCompatActivity {
                 }
             }
         });
+
+
+        requestAllPermissions();
+    }
+
+    private void requestAllPermissions() {
+        String[] permissions = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.VIBRATE
+        };
+
+        boolean allGranted = true;
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+
+        if (!allGranted) {
+            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+        }
     }
 
     private boolean validaRegistro(EditText nameUser, EditText lastnameUser, EditText telefonoUser) {

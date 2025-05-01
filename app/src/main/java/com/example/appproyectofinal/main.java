@@ -2,11 +2,14 @@ package com.example.appproyectofinal;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Looper;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,6 +31,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import android.location.Location;
+import android.Manifest;
+
+
+
+
 
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
@@ -176,14 +191,40 @@ public class main extends Fragment {
 
     // Método para obtener la ubicación y enviarla a los contactos de emergencia
     private void sendLocationToEmergencyContacts() {
-        // Aquí debes obtener la ubicación del dispositivo, por ejemplo con FusedLocationProviderClient
-        // Esto es un ejemplo simple, debes implementar el código para obtener la ubicación real
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        // Obtener la ubicación (esto es solo un ejemplo)
-        String location = "Lat: 19.4326, Lon: -99.1332"; // Ejemplo de ubicación en la Ciudad de México
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getContext(), "Permiso de ubicación no concedido", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Simulamos enviar la ubicación a un número de emergencia
-        sendEmergencyCall("8713789035", location);
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(requireActivity(), location -> {
+                    if (location != null) {
+                        String loc = "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude();
+                        sendEmergencyCall("8713789035", loc);
+                    } else {
+                        // Si es null, pedimos actualización activa
+                        LocationRequest locationRequest = LocationRequest.create()
+                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                                .setInterval(1000)
+                                .setNumUpdates(1);
+
+                        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                Location updatedLocation = locationResult.getLastLocation();
+                                if (updatedLocation != null) {
+                                    String loc = "Lat: " + updatedLocation.getLatitude() + ", Lon: " + updatedLocation.getLongitude();
+                                    sendEmergencyCall("8713789035", loc);
+                                } else {
+                                    Toast.makeText(getContext(), "No se pudo obtener la ubicación (forzada)", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, Looper.getMainLooper());
+                    }
+                });
     }
 
     // Método para simular el envío de un mensaje con la ubicación a un número de emergencia
