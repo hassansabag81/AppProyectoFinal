@@ -18,9 +18,11 @@
         android:label="@string/menu_slideshow"
         tools:layout="@layout/terms_conditions" />
 
+
     <fragment
         android:id="@+id/violentometro"
-        android:label="@string/violentometro"
-        android:name="com.example.appproyectofinal.ui.slideshow.SlideshowFragment"
-        tools:layout="@layout/violentometro" />
+        android:name="com.example.appproyectofinal.ui.violentrometro.ViolentrometroFragment"
+        android:label="@string/violentometro" />
+
+
 </navigation>
