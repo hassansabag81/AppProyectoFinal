@@ -14,7 +14,7 @@
         android:layout_gravity="center">
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/botonAlerta"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_marginBottom="20dp"

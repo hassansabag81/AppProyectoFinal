@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppProyectoFinal</string>
+    <string name="app_name">Sorora</string>
     <string name="title_activity_menu2">MenuActivity2</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
