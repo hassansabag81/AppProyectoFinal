@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse in arcu libero. Fusce gravida venenatis quam at porttitor. Sed id dictum risus. Etiam et dignissim ligula. Ut faucibus ante pretium sollicitudin efficitur. Ut fringilla lectus non ultrices facilisis. Praesent eu lorem non tortor posuere tristique quis a purus. Donec et interdum sem. Maecenas blandit dolor ipsum, quis condimentum nunc bibendum nec. Donec ac turpis ut nulla eleifend vehicula eu et est.  Nunc tempor felis in lacus pulvinar, et vestibulum leo congue. Curabitur congue nisi iaculis pharetra sagittis. Morbi et turpis tincidunt, sagittis tortor et, feugiat risus. Etiam commodo vehicula elit, nec sagittis arcu. Praesent sit amet aliquam nunc. Praesent feugiat sit amet elit a facilisis. Nam dignissim, ligula et varius congue, ante tortor aliquet dolor, in bibendum justo felis et tellus. Vestibulum in elit quis risus viverra vulputate id et dui.  Morbi nec turpis sit amet ligula lacinia commodo. Nam elit risus, pulvinar in blandit et, sollicitudin quis justo. Suspendisse potenti. Maecenas lectus ex, commodo eu risus vitae, molestie dignissim urna. Pellentesque vel dolor arcu. Nullam non ante cursus, convallis enim vel, venenatis ante. Proin vel nibh placerat, mollis velit in, cursus leo. Etiam porta, nibh eget sollicitudin vestibulum, erat felis bibendum elit, et aliquet mauris odio vitae dui. Praesent dolor leo, pulvinar ut convallis vitae, sollicitudin ac leo. Integer orci leo, porta eget odio vitae, malesuada egestas tellus.  Duis nec tincidunt turpis. Nam sit amet tincidunt ligula. Fusce accumsan ac nisi vel faucibus. Praesent gravida elit eu sollicitudin laoreet. In id orci nunc. Mauris suscipit nibh hendrerit cursus varius. Sed ac elementum odio.  Phasellus mattis libero consectetur arcu suscipit, quis efficitur enim lobortis. Vestibulum consequat urna quis auctor sodales. Sed ipsum massa, malesuada non ultricies ac, tempor eu neque. In libero libero, vehicula vel convallis nec, vulputate quis ante. Cras varius, risus sed elementum dictum, est arcu cursus ex, et egestas urna nisi eget nunc. Suspendisse vel est risus. Pellentesque viverra gravida risus, ut scelerisque diam semper ut. Nullam lacinia lacus condimentum egestas varius. Ut eget eros a nulla sodales sodales. Nullam vitae efficitur est. Fusce augue libero, pretium id ante luctus, volutpat feugiat velit. Phasellus eros justo, rutrum ac magna non, luctus tempus arcu. Fusce mauris dolor, pharetra vel mi ut, eleifend commodo ex. In lectus quam, laoreet quis leo in, suscipit ornare eros. Etiam sagittis turpis id vulputate fermentum." />
+
+    </LinearLayout>
+</ScrollView>
