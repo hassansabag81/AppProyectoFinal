@@ -1,6 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="61dp"
+        android:text="Información"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="35sp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/alertaButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/botones"
+        android:onClick="cargarImagen"
+        android:text="Alerta"
+        android:textSize="40sp" />
+
+    <View
+        android:id="@+id/view8"
+        android:layout_width="match_parent"
+        android:layout_height="19dp" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/violenciaButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/botones"
+        android:onClick="cargarImagen"
+        android:text="Tipos de violencia"
+        android:textSize="30sp" />
+    <View
+        android:id="@+id/view9"
+        android:layout_width="match_parent"
+        android:layout_height="19dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/modalidadButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/botones"
+        android:onClick="cargarImagen"
+        android:text="Modalidades de violencia"
+        android:textSize="30sp" />
+
+    <View
+        android:id="@+id/view11"
+        android:layout_width="match_parent"
+        android:layout_height="19dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/centrosButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/botones"
+        android:onClick="cargarImagen"
+        android:text="Centros de información"
+        android:textSize="30sp" />
+    <View
+        android:id="@+id/view12"
+        android:layout_width="match_parent"
+        android:layout_height="19dp" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/atencionButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/botones"
+        android:onClick="cargarImagen"
+        android:text="Números de atencion"
+        android:textSize="30sp" />
+
+    <View
+        android:id="@+id/view13"
+        android:layout_width="match_parent"
+        android:layout_height="19dp" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/violentometroButton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/botones"
+        android:onClick="cargarImagen"
+        android:text="Violentometro"
+        android:textSize="30sp" />
+</LinearLayout>
