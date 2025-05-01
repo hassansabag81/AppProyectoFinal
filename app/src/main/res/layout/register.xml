@@ -88,6 +88,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:inputType="phone"
+                android:maxLength="10"
                 android:textColorHint="#B3000000"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
