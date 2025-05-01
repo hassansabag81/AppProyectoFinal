@@ -15,11 +15,4 @@
         android:layout_width="match_parent"
         android:layout_height="21dp" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        tools:src="@drawable/vtm"
-        android:layout_width="448dp"
-        android:layout_height="643dp"
-        android:layout_gravity="center"
-        app:srcCompat="@drawable/vtm" />
 </LinearLayout>
