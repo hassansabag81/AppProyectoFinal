@@ -32,12 +32,12 @@
         <item
             android:title="Terminos y condiciones"
             android:icon="@drawable/tyc"
-            android:id="@+id/tyc" />
+            android:id="@+id/termsConditions" />
 
         <item
             android:title="Aviso de privacidad"
             android:icon="@drawable/adp"
-            android:id="@+id/privacidad" />
+            android:id="@+id/privacity" />
 
     </group>
 </menu>
