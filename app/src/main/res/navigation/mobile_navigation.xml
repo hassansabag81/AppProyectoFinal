@@ -27,6 +27,10 @@
         android:id="@+id/alertas"
         android:name="com.example.appproyectofinal.ui.alertas.AlertasFragment"
         android:label="Alertas" />
+    <fragment
+        android:id="@+id/foto"
+        android:name="com.example.appproyectofinal.ui.camara.CamaraFragment"
+        android:label="Camara" />
 
 
 </navigation>
