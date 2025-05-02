@@ -31,19 +31,30 @@ public class register_user extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 1001;
     ImageView imagen;
     Button contacto, registrar;
-    EditText nameUser, lastnameUser, telefonoUser;
+    EditText nameUser, lastnameFUser, telefonoUser, direccionUser;
     CheckBox tc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
-        imagen = (ImageView) findViewById(R.id.imageView);
-        contacto = (Button) findViewById(R.id.contactsBtn);
-        registrar = (Button)findViewById(R.id.registrarUser);
-        nameUser = (EditText) findViewById(R.id.nombreUser);
-        lastnameUser = (EditText) findViewById(R.id.apellidoUser);
-        telefonoUser = (EditText) findViewById(R.id.telefonoUser);
-        tc = (CheckBox) findViewById(R.id.termsConditions);
+
+        imagen = findViewById(R.id.imageView);
+        contacto = findViewById(R.id.contactsBtn);
+        registrar = findViewById(R.id.registrarUser);
+        nameUser = findViewById(R.id.nombreUser);
+        lastnameFUser = findViewById(R.id.apellidoUser);
+        direccionUser = findViewById(R.id.direccion);
+        telefonoUser = findViewById(R.id.telefonoUser);
+        tc = findViewById(R.id.termsConditions);
+
+        Database db = new Database(this);
+        if (db.hayUsuarios()) {
+            Intent intent = new Intent(register_user.this, MenuActivity2.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
 
         dialog(register_user.this);
 
@@ -74,13 +85,66 @@ public class register_user extends AppCompatActivity {
         registrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(validaRegistro(nameUser, lastnameUser, telefonoUser) && tc.isChecked()) {
+
+                    String nombre = nameUser.getText().toString().trim();
+                    String apellidoPaterno = lastnameFUser.getText().toString().trim();
+                    String direccion = direccionUser.getText().toString().trim();
+                    String telefono = telefonoUser.getText().toString().trim();
+                    boolean termsAccepted = tc.isChecked();
+
+                    if (nombre.isEmpty()) {
+                        nameUser.setError("El nombre es obligatorio");
+                        nameUser.requestFocus();
+                        return;
+                    }
+
+                    if (apellidoPaterno.isEmpty()) {
+                        lastnameFUser.setError("El apellido paterno es obligatorio");
+                        lastnameFUser.requestFocus();
+                        return;
+                    }
+
+                    if (direccion.isEmpty()) {
+                        direccionUser.setError("La direccion es obligatoria");
+                        direccionUser.requestFocus();
+                        return;
+                    }
+
+                    if (telefono.isEmpty()) {
+                        telefonoUser.setError("El teléfono es obligatorio");
+                        telefonoUser.requestFocus();
+                        return;
+                    }
+
+                    if (!telefono.matches("^871\\d{7}$")) {
+                        telefonoUser.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
+                        return;
+                    }
+
+                    if (telefono.length() != 10 || !telefono.matches("[0-9]+")) {
+                        telefonoUser.setError("Debe ser un número de 10 dígitos");
+                        telefonoUser.requestFocus();
+                        return;
+                    }
+
+                    if (!termsAccepted) {
+                        Toast.makeText(register_user.this, "Debe aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                Database db = new Database(register_user.this);
+                boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, direccion, telefono);
+
+                if (insertado) {
+                    Toast.makeText(register_user.this, "Usuario guardado en la base de datos", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(register_user.this, "Error al guardar usuario", Toast.LENGTH_SHORT).show();
+                }
+
                     Intent intent = new Intent(register_user.this, MenuActivity2.class);
                     startActivity(intent);
                     finish();
-                } else if (!tc.isChecked()){
-                    Toast.makeText(register_user.this, "Acepta los terminos y condiciones", Toast.LENGTH_SHORT).show();
-                }
+
             }
         });
 
@@ -112,19 +176,6 @@ public class register_user extends AppCompatActivity {
         }
     }
 
-    private boolean validaRegistro(EditText nameUser, EditText lastnameUser, EditText telefonoUser) {
-        if(nameUser.getText().toString().isEmpty() || lastnameUser.getText().toString().isEmpty() || telefonoUser.getText().toString().isEmpty()){
-            Toast.makeText(this, "Error: Faltan campos por rellenar", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if(telefonoUser.length() != 10){
-            Toast.makeText(this, "Error: Numero de telefono invalido", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        return true;
-    }
 
     public void cargarImagen(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

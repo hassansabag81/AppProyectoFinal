@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/login_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,8 +19,8 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             app:srcCompat="@drawable/sorora" />
 
         <TextView
@@ -29,20 +30,26 @@
             android:fontFamily="@font/agbalumo"
             android:text="Registro"
             android:textAlignment="center"
-            android:textColor="#673AB7"
-            android:textSize="48sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="24sp" />
 
         <View
             android:id="@+id/view4"
             android:layout_width="match_parent"
-            android:layout_height="30dp" />
+            android:layout_height="15dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nombreUserLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ingresa tu Nombre">
+            android:hint="Nombre">
+
+            <View
+                android:id="@+id/view18"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_weight="1" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/nombreUser"
@@ -51,6 +58,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:inputType="text"
+                android:textColor="#FFFFFF"
                 android:textColorHint="#B3000000"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -61,7 +69,13 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ingresa tu primer apellido">
+            android:hint="Apellido paterno">
+
+            <View
+                android:id="@+id/view19"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_weight="1" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/apellidoUser"
@@ -70,8 +84,64 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:inputType="text"
+                android:textColor="#FFFFFF"
                 android:textColorHint="#B3000000"
                 android:textSize="18sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/apellidoUserLayout1"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Apellido materno (opcional)">
+
+                <View
+                    android:id="@+id/view20"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/apellidoUser2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:inputType="text"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#B3000000"
+                    android:textSize="18sp" />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/direccionlayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Direccion">
+
+                <View
+                    android:id="@+id/view22"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/direccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:inputType="text"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#B3000000"
+                    android:textSize="18sp" />
+
+
+            </com.google.android.material.textfield.TextInputLayout>
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -79,7 +149,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ingresa tu numero de telefono">
+            android:hint="Telefono (Torreon)">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/telefonoUser"
@@ -89,6 +159,7 @@
                 android:layout_marginEnd="10dp"
                 android:inputType="phone"
                 android:maxLength="10"
+                android:textColor="#FFFFFF"
                 android:textColorHint="#B3000000"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -116,7 +187,9 @@
             android:background="@drawable/botones"
             android:onClick="cargarImagen"
             android:text="Cargar Imagen"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:backgroundTint="#5A4162"
+            android:textColor="#FFFFFF"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/contactsBtn"
@@ -124,7 +197,9 @@
             android:layout_height="50dp"
             android:background="@drawable/botones"
             android:text="Registrar contacto"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:backgroundTint="#5A4162"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
     <View
@@ -134,9 +209,13 @@
 
     <CheckBox
         android:id="@+id/termsConditions"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:text="He leído y acepto los términos y condiciones de Sorora." />
+        android:layout_gravity="center"
+        android:text="He leído y acepto los términos y condiciones de Sorora."
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp" />
 
     <View
         android:id="@+id/view5"
@@ -152,6 +231,8 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:text="Registrar"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:backgroundTint="#5A4162"
+        android:textColor="#FFFFFF"/>
 
 </LinearLayout>

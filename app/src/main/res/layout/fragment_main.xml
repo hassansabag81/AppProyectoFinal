@@ -34,12 +34,13 @@
                 android:layout_width="250dp"
                 android:layout_height="85dp"
                 android:layout_marginTop="10dp"
-
                 android:backgroundTint="#5A4162"
                 android:text="Llamar al 911"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 app:icon="@drawable/tele"
-                app:iconSize="30dp" />
+                app:iconSize="30dp"
+                app:iconTint="#FFFFFF" />
 
 
             <View
@@ -54,10 +55,12 @@
                 android:layout_marginTop="10dp"
                 android:backgroundTint="#5A4162"
                 android:text="Llamar a Seguridad Pública"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 app:icon="@drawable/tele"
                 app:iconPadding="10dp"
-                app:iconSize="20dp" />
+                app:iconSize="20dp"
+                app:iconTint="#FFFFFF" />
 
         </LinearLayout>
     </LinearLayout>
