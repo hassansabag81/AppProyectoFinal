@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_background"
@@ -19,7 +20,10 @@
         android:backgroundTint="#5A4162"
         android:text="Alerta"
         android:textColor="#FFFFFF"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        app:icon="@drawable/alerta"
+        app:iconPadding="-40dp"
+        app:iconSize="40dp" />
 
 
     <View
@@ -37,7 +41,9 @@
         android:backgroundTint="#5A4162"
         android:text="Tipos de violencia"
         android:textColor="#FFFFFF"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        app:icon="@drawable/enojado"
+        app:iconSize="40dp" />
 
 
     <View
@@ -55,7 +61,9 @@
         android:backgroundTint="#5A4162"
         android:text="Modalidades de violencia"
         android:textColor="#FFFFFF"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        app:icon="@drawable/furia"
+        app:iconSize="40dp" />
 
 
     <View
@@ -73,7 +81,9 @@
         android:backgroundTint="#5A4162"
         android:text="Centros de información"
         android:textColor="#FFFFFF"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        app:icon="@drawable/cinfo"
+        app:iconSize="40dp" />
 
 
     <View
@@ -90,7 +100,10 @@
         android:backgroundTint="#5A4162"
         android:text="Números de atención"
         android:textColor="#FFFFFF"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        app:icon="@drawable/llamada"
+        app:iconPadding="-30dp"
+        app:iconSize="40dp" />
 
 
     <View
@@ -107,7 +120,10 @@
         android:backgroundTint="#5A4162"
         android:text="Violentometro"
         android:textColor="#FFFFFF"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        app:icon="@drawable/medidor"
+        app:iconPadding="-40dp"
+        app:iconSize="40dp" />
 
 
 </LinearLayout>
