@@ -190,7 +190,6 @@ public class main extends Fragment {
     private void sendEmergencyNotification() {
         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Crear canal de notificación para Android 8.0 o superior
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("emergency", "Emergencia", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);

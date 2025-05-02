@@ -68,7 +68,7 @@ public class register_user extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(register_user.this);
                 builder.setTitle("Terminos y condiciones");
                 LayoutInflater inflater = LayoutInflater.from(register_user.this);
-                View dialogView = inflater.inflate(R.layout.terms_conditions, null);
+                View dialogView = inflater.inflate(R.layout.fragment_terms2, null);
                 builder.setView(dialogView);
                 builder.setPositiveButton("Aceptar", null);
                 builder.show();

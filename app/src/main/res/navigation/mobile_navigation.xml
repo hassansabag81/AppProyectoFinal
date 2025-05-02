@@ -43,5 +43,17 @@
         android:name="com.example.appproyectofinal.ui.explicacion.ExplicacionFragment"
         android:label="Explicacion:" />
 
+    <fragment
+        android:id="@+id/termsConditions"
+        android:label="Terminos y Condiciones"
+        android:name="com.example.appproyectofinal.ui.terms.TermsFragment" />
+
+    <fragment
+        android:id="@+id/privacity"
+        android:label="Aviso de privacidad"
+        android:name="com.example.appproyectofinal.ui.privacity.PrivacityFragment"
+        android:layout = "@layout/fragment_privacity"/>
+
+
 
 </navigation>

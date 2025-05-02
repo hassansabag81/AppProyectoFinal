@@ -62,7 +62,7 @@ public class MenuActivity2 extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity2.this);
             builder.setTitle("Terminos y condiciones");
             LayoutInflater inflater = LayoutInflater.from(MenuActivity2.this);
-            View dialogView = inflater.inflate(R.layout.terms_conditions, null);
+            View dialogView = inflater.inflate(R.layout.fragment_terms2, null);
             builder.setView(dialogView);
             builder.setPositiveButton("Cerrar", null);
             builder.show();
@@ -71,7 +71,7 @@ public class MenuActivity2 extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity2.this);
             builder.setTitle("Aviso de Privacidad");
             LayoutInflater inflater = LayoutInflater.from(MenuActivity2.this);
-            View dialogView = inflater.inflate(R.layout.privacity, null);
+            View dialogView = inflater.inflate(R.layout.fragment_privacity, null);
             builder.setView(dialogView);
             builder.setPositiveButton("Cerrar", null);
             builder.show();
