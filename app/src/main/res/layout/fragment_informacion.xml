@@ -5,14 +5,10 @@
     android:background="@drawable/login_background"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView4"
+    <View
+        android:id="@+id/view14"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:text="Información"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="35sp" />
+        android:layout_height="61dp" />
 
     <Button
         android:id="@+id/alertaButton"
