@@ -31,7 +31,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:backgroundTint="#5A4162"
-        android:onClick="cargarImagen"
         android:text="Fotografia"
         android:textSize="30sp" />
 </LinearLayout>
