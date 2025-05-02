@@ -23,6 +23,10 @@
         android:id="@+id/configuracion"
         android:name="com.example.appproyectofinal.ui.configuracion.ConfiguracionFragment"
         android:label="Configuracion" />
+    <fragment
+        android:id="@+id/alertas"
+        android:name="com.example.appproyectofinal.ui.alertas.AlertasFragment"
+        android:label="Alertas" />
 
 
 </navigation>
