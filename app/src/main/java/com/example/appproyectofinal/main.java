@@ -133,7 +133,7 @@ public class main extends Fragment {
                     case MotionEvent.ACTION_DOWN:
                         // Comienza a contar cuando se presiona el botón
                         pressDuration = 0;
-                        handler.postDelayed(updateTimer, 1000);  // Actualiza cada segundo
+                        handler.postDelayed(updateTimer, 1000);
                         return true;
                     case MotionEvent.ACTION_UP:
                         // Detiene el contador cuando el botón se suelta

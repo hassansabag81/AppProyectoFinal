@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,12 +27,24 @@ import java.io.File;
 import java.io.FileOutputStream;
 import androidx.core.content.FileProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import android.location.Location;
+import android.Manifest;
+import android.widget.Toast;
+
 
 public class CamaraFragment extends Fragment {
 
     private FragmentCamaraBinding binding;
     private ActivityResultLauncher<Intent> takePictureLauncher;
     private Bitmap ultimaFotoBitmap;
+
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     @Nullable
     @Override
@@ -51,6 +65,8 @@ public class CamaraFragment extends Fragment {
                         binding.enviarButton.setEnabled(true);
                     }
                 });
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         // Botón para tomar foto
         binding.fotoButton.setOnClickListener(v -> tomarFoto());
@@ -93,18 +109,47 @@ public class CamaraFragment extends Fragment {
         }
     }
 
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     private void compartirImagen(Bitmap bitmap) {
-        Uri uri = guardarImagen(bitmap);
-        if (uri == null) return;
+        // Obtener la ubicación
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(requireActivity(), location -> {
+                    String loc = "";
+                    if (location != null) {
+                        loc = "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude();
+                    } else {
+                        LocationRequest locationRequest = LocationRequest.create()
+                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                                .setInterval(1000)
+                                .setNumUpdates(1);
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.putExtra(Intent.EXTRA_TEXT, "Me encuentro en problemas, te envío una foto de mi ubicación 📸");
+                        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                Location updatedLocation = locationResult.getLastLocation();
+                                if (updatedLocation != null) {
+                                    String loc = "Lat: " + updatedLocation.getLatitude() + ", Lon: " + updatedLocation.getLongitude();
+                                } else {
+                                    Toast.makeText(getContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, Looper.getMainLooper());
+                    }
 
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(intent, "Compartir imagen con..."));
+                    // Guardar la imagen y enviar el mensaje
+                    Uri uri = guardarImagen(bitmap);
+                    if (uri == null) return;
+
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("image/*");
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.putExtra(Intent.EXTRA_TEXT, "Me encuentro en problemas, te envío una foto de mi ubicación 📸\n" + loc);
+
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(intent, "Compartir imagen con..."));
+                });
     }
+
 
     @Override
     public void onDestroyView() {
