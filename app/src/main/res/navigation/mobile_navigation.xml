@@ -18,7 +18,11 @@
     <fragment
         android:id="@+id/informacion"
         android:name="com.example.appproyectofinal.ui.infromacion.InformacionFragment"
-        android:label="Informacion" />
+        android:label="Informacion" >
+        <action
+            android:id="@+id/action_informacion_to_violentometro2"
+            app:destination="@id/violentometro" />
+    </fragment>
     <fragment
         android:id="@+id/configuracion"
         android:name="com.example.appproyectofinal.ui.configuracion.ConfiguracionFragment"

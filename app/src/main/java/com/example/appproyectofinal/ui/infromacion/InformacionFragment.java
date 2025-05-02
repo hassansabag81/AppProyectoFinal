@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
+import com.example.appproyectofinal.R;
 import com.example.appproyectofinal.databinding.FragmentInformacionBinding;
 
 public class InformacionFragment extends Fragment {
@@ -23,6 +26,11 @@ public class InformacionFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentInformacionBinding.inflate(inflater, container, false);
+
+        binding.violentometroButton.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_informacion_to_violentometro2)
+        );
+
         return binding.getRoot();
     }
 
