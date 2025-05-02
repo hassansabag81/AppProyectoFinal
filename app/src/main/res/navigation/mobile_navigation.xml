@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_informacion_to_violentometro2"
             app:destination="@id/violentometro" />
+        <action
+            android:id="@+id/action_informacion_to_explicacionFragment"
+            app:destination="@id/explicacionFragment" />
     </fragment>
     <fragment
         android:id="@+id/configuracion"
@@ -35,6 +38,10 @@
         android:id="@+id/foto"
         android:name="com.example.appproyectofinal.ui.camara.CamaraFragment"
         android:label="Camara" />
+    <fragment
+        android:id="@+id/explicacionFragment"
+        android:name="com.example.appproyectofinal.ui.explicacion.ExplicacionFragment"
+        android:label="ExplicacionFragment" />
 
 
 </navigation>
