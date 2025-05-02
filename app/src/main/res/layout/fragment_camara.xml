@@ -33,4 +33,19 @@
         android:backgroundTint="#5A4162"
         android:text="Fotografia"
         android:textSize="30sp" />
+    <View
+        android:id="@+id/view17"
+        android:layout_width="match_parent"
+        android:layout_height="53dp" />
+
+    <Button
+        android:id="@+id/enviarButton"
+        android:layout_width="match_parent"
+        android:layout_height="79dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:backgroundTint="#5A4162"
+        android:onClick="cargarImagen"
+        android:text="Enviar"
+        android:textSize="30sp" />
 </LinearLayout>
