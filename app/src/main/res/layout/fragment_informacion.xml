@@ -99,7 +99,7 @@
         android:layout_height="19dp" />
 
     <Button
-        android:id="@+id/violentometroButton"
+        android:id="@+id/fotoButton"
         android:layout_width="match_parent"
         android:layout_height="79dp"
         android:layout_marginLeft="10dp"

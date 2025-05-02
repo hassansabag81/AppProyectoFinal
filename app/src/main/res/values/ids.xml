@@ -12,5 +12,5 @@
     <item name="view12" type="id" />
     <item name="atencionButton" type="id" />
     <item name="view13" type="id" />
-    <item name="violentometroButton" type="id" />
+    <item name="fotoButton" type="id" />
 </resources>
