@@ -46,6 +46,7 @@ public class CamaraFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
 
 
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
