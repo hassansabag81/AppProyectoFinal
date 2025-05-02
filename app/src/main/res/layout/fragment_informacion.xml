@@ -100,7 +100,7 @@
     <Button
         android:id="@+id/violentometroButton"
         android:layout_width="match_parent"
-        android:layout_height="79dp"
+        android:layout_height="87dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:backgroundTint="#5A4162"
