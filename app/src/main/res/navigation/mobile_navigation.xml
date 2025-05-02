@@ -41,7 +41,7 @@
     <fragment
         android:id="@+id/explicacionFragment"
         android:name="com.example.appproyectofinal.ui.explicacion.ExplicacionFragment"
-        android:label="ExplicacionFragment" />
+        android:label="Explicacion:" />
 
 
 </navigation>
