@@ -10,24 +10,14 @@
             android:title="Inicio" />
 
         <item
-            android:id="@+id/contactos"
-            android:icon="@drawable/contact"
-            android:title="Contactos" />
+            android:title="Configuracion"
+            android:icon="@drawable/config"
+            android:id="@+id/configuracion" />
 
         <item
             android:id="@+id/informacion"
             android:icon="@drawable/info"
             android:title="Informacion" />
-
-        <item
-            android:id="@+id/violentometro"
-            android:icon="@drawable/medidor"
-            android:title="@string/violentometro" />
-
-        <item
-            android:title="Configuracion"
-            android:icon="@drawable/config"
-            android:id="@+id/configuracion" />
 
         <item
             android:title="Historial de alertas"
