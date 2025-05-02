@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="alertas" type="id" />
+    <item name="textView4" type="id" />
+    <item name="alertaButton" type="id" />
+    <item name="view8" type="id" />
+    <item name="violenciaButton" type="id" />
+    <item name="view9" type="id" />
+    <item name="modalidadButton" type="id" />
+    <item name="view11" type="id" />
+    <item name="centrosButton" type="id" />
+    <item name="view12" type="id" />
+    <item name="atencionButton" type="id" />
+    <item name="view13" type="id" />
+    <item name="violentometroButton" type="id" />
 </resources>
