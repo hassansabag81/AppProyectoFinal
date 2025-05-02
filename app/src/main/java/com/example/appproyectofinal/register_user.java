@@ -94,7 +94,8 @@ public class register_user extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.CALL_PHONE,
-                Manifest.permission.VIBRATE
+                Manifest.permission.VIBRATE,
+                Manifest.permission.CAMERA
         };
 
         boolean allGranted = true;
