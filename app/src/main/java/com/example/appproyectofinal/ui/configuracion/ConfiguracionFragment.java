@@ -44,11 +44,11 @@ public class ConfiguracionFragment extends Fragment {
             DialogoNewContact();
         });
 
-
-        binding.imgNewBtn.setOnClickListener(v -> {
-            cargarImagen();
+        binding.imgNewBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setType("image/");
+            startActivityForResult(intent.createChooser(intent, "Seleccionar"),10);
         });
-
 
         return binding.getRoot();
     }
@@ -72,12 +72,6 @@ public class ConfiguracionFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void cargarImagen() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/");
-        startActivityForResult(intent.createChooser(intent, "Seleccionar"), 10);
     }
 
     public void DialogoNewContact() {
