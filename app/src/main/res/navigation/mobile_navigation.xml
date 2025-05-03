@@ -9,7 +9,11 @@
         android:id="@+id/main"
         android:name="com.example.appproyectofinal.main"
         android:label="Sorora"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_main_to_alertas"
+            app:destination="@id/alertas" />
+    </fragment>
 
     <fragment
         android:id="@+id/violentometro"

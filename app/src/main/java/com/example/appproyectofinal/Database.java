@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -87,7 +88,16 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
-
+    public boolean actualizarUsuario(String nombre, String apellido, String direccion, String telefono) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nombre", nombre);
+        values.put("apellido", apellido);
+        values.put("direccion", direccion);
+        values.put("telefono", telefono);
+        int result = db.update("usuarios", values, "id = (SELECT id FROM usuarios LIMIT 1)", null);
+        return result > 0;
+    }
 
     public boolean insertarContacto(String nombre, String telefono, String parentesco) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -101,6 +111,8 @@ public class Database extends SQLiteOpenHelper {
 
         return result != -1;
     }
+
+
 
     public Cursor obtenerUsuarios() {
         SQLiteDatabase db = this.getReadableDatabase();

@@ -6,8 +6,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+
+import com.example.appproyectofinal.ui.alertas.AlertasFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -32,8 +37,8 @@ public class MenuActivity2 extends AppCompatActivity {
         binding.appBarMenu2.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                NavController navController = Navigation.findNavController(MenuActivity2.this, R.id.nav_host_fragment_content_menu2);
+                navController.navigate(R.id.action_main_to_alertas); // Asegúrate de que este ID esté en el nav_graph.xml
             }
         });
         DrawerLayout drawer = binding.drawerLayout;

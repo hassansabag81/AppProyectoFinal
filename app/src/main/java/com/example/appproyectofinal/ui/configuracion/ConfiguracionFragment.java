@@ -3,6 +3,7 @@ package com.example.appproyectofinal.ui.configuracion;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -21,10 +22,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.appproyectofinal.Database;
 import com.example.appproyectofinal.R;
 import com.example.appproyectofinal.databinding.FragmentConfiguracionBinding;
 
+import android.util.Log;
+
 public class ConfiguracionFragment extends Fragment {
+
+    private Database database;
 
     private FragmentConfiguracionBinding binding;
 
@@ -40,9 +46,15 @@ public class ConfiguracionFragment extends Fragment {
         binding = FragmentConfiguracionBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
 
+        database = new Database(getContext());
+
         binding.contactsBtn.setOnClickListener(v -> {
             DialogoNewContact();
         });
+
+        cargarDatosUsuario();
+
+
 
         binding.imgNewBtn.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -59,6 +71,66 @@ public class ConfiguracionFragment extends Fragment {
         binding = null;
     }
 
+    // Método para cargar los datos del usuario
+    private void cargarDatosUsuario() {
+            if (database.hayUsuarios()) {
+                Cursor cursor = database.obtenerUsuarios();
+                if (cursor.moveToFirst()) {
+                    // Imprimir los nombres de las columnas para depuración
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        Log.d("Database", "Columna " + i + ": " + cursor.getColumnName(i));
+                    }
+
+                    // Asegúrate de que las columnas "nombre", "apellido", "direccion", "telefono" existan en la base de datos
+                    int nombreColumnIndex = cursor.getColumnIndex("nombre");
+                    if (nombreColumnIndex != -1) {
+                        String nombre = cursor.getString(nombreColumnIndex);
+                        binding.nombreUser.setText(nombre);
+                    } else {
+                        Log.e("Database", "Columna 'nombre' no encontrada");
+                    }
+
+                    // Repite esto para las demás columnas
+                    int apellidoColumnIndex = cursor.getColumnIndex("apellido");
+                    if (apellidoColumnIndex != -1) {
+                        String apellido = cursor.getString(apellidoColumnIndex);
+                        binding.apellidoUser.setText(apellido);
+                    }
+
+                    int direccionColumnIndex = cursor.getColumnIndex("direccion");
+                    if (direccionColumnIndex != -1) {
+                        String direccion = cursor.getString(direccionColumnIndex);
+                        binding.direccionUser.setText(direccion);
+                    }
+
+                    int telefonoColumnIndex = cursor.getColumnIndex("telefono");
+                    if (telefonoColumnIndex != -1) {
+                        String telefono = cursor.getString(telefonoColumnIndex);
+                        binding.telefonoUser.setText(telefono);
+                    }
+                cursor.close();
+            }
+        } else {
+            Toast.makeText(getContext(), "No hay usuarios registrados", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Método para guardar los cambios en los campos
+    private void guardarDatosUsuario() {
+        String nombre = binding.nombreUser.getText().toString();
+        String apellido = binding.apellidoUser.getText().toString();
+        String direccion = binding.direccionUser.getText().toString();
+        String telefono = binding.telefonoUser.getText().toString();
+
+        if (database.insertarUsuario(nombre, apellido, direccion, telefono)) {
+            Toast.makeText(getContext(), "Datos guardados correctamente", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Error al guardar los datos", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Llamado cuando se presiona el botón de guardar
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_save, menu);
@@ -67,8 +139,19 @@ public class ConfiguracionFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_guardar) {
-            // Aquí va tu lógica de guardado
-            Toast.makeText(getContext(), "Información guardada", Toast.LENGTH_SHORT).show();
+            String nombre = binding.nombreUser.getText().toString();
+            String apellido = binding.apellidoUser.getText().toString();
+            String direccion = binding.direccionUser.getText().toString();
+            String telefono = binding.telefonoUser.getText().toString();
+
+            boolean exito;
+            if (database.hayUsuarios()) {
+                exito = database.actualizarUsuario(nombre, apellido, direccion, telefono);
+                Toast.makeText(getContext(), exito ? "Datos actualizados" : "Error al actualizar", Toast.LENGTH_SHORT).show();
+            } else {
+                exito = database.insertarUsuario(nombre, apellido, direccion, telefono);
+                Toast.makeText(getContext(), exito ? "Usuario guardado" : "Error al guardar", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
