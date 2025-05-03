@@ -142,7 +142,7 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/cargarImgBtn"
+            android:id="@+id/imgNewBtn"
             android:layout_width="400dp"
             android:layout_height="50dp"
             android:background="@drawable/botones"
