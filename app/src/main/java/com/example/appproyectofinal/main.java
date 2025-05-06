@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
@@ -14,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,14 +28,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -48,7 +45,8 @@ import android.Manifest;
 
 
 import androidx.core.app.NotificationCompat;
-import androidx.fragment.app.Fragment;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -190,7 +188,7 @@ public class main extends Fragment {
     private void sendEmergencyNotification() {
         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("emergency", "Emergencia", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
@@ -219,8 +217,8 @@ public class main extends Fragment {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(requireActivity(), location -> {
                     if (location != null) {
-                        String loc = "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude();
-                        sendSmsToEmergencyContact("8713789035", loc);
+                        String mensaje = "¡Emergencia! Esta es mi ubicación: https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
+                        sendSmsToContacts(mensaje);
                     } else {
                         // Si es null, pedimos actualización activa
                         LocationRequest locationRequest = LocationRequest.create()
@@ -233,8 +231,8 @@ public class main extends Fragment {
                             public void onLocationResult(LocationResult locationResult) {
                                 Location updatedLocation = locationResult.getLastLocation();
                                 if (updatedLocation != null) {
-                                    String loc = "Lat: " + updatedLocation.getLatitude() + ", Lon: " + updatedLocation.getLongitude();
-                                    sendSmsToEmergencyContact("8713789035", loc);
+                                    String mensaje = "¡Emergencia! Esta es mi ubicación: https://maps.google.com/?q=" + updatedLocation.getLatitude() + "," + updatedLocation.getLongitude();
+                                    sendSmsToContacts(mensaje);
                                 } else {
                                     Toast.makeText(getContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
                                 }
@@ -243,6 +241,42 @@ public class main extends Fragment {
                     }
                 });
     }
+
+    private void sendSmsToContacts(String mensaje) {
+        Database db = new Database(getContext());
+        Cursor cursor = db.obtenerContactos();
+
+        if (cursor.moveToFirst()) {
+            do {
+                String telefono = "";
+                int colIndex = cursor.getColumnIndex("telefono_contacto");
+                if (colIndex != -1) {
+                    telefono = cursor.getString(colIndex);
+
+                    Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + telefono));
+                    smsIntent.putExtra("sms_body", mensaje);
+                    startActivity(smsIntent);
+
+                } else {
+                    Log.e("ERROR", "La columna telefono_contacto no existe en el cursor");
+                }
+            } while (cursor.moveToNext());
+        } else {
+            Toast.makeText(getContext(), "No hay contactos de emergencia", Toast.LENGTH_SHORT).show();
+        }
+
+        cursor.close();
+    }
+
+    private void enviarSMS(String numero, String mensaje) {
+        try {
+            SmsManager sms = SmsManager.getDefault();
+            sms.sendTextMessage(numero, null, mensaje, null, null);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error enviando SMS a " + numero + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     // Método para enviar un SMS (simulado) a un número de emergencia con la ubicación
     private void sendSmsToEmergencyContact(String phoneNumber, String location) {
