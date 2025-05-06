@@ -71,9 +71,26 @@ public class ConfiguracionFragment extends Fragment {
 
 
         binding.imgNewBtn.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.setType("image/");
-            startActivityForResult(intent.createChooser(intent, "Seleccionar"),10);
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            builder.setTitle("Seleccionar opción");
+
+            String[] opciones = {"Tomar foto", "Seleccionar de galería"};
+            builder.setItems(opciones, (dialog, which) -> {
+                if (which == 0) {
+                    // Tomar foto
+                    //photoUri = crearImagenUri();
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                    //startActivityForResult(intent, REQUEST_CAMERA);
+                } else if (which == 1) {
+                    // Seleccionar de galería
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    startActivityForResult(Intent.createChooser(intent, "Seleccionar"), 10); // Código 10 para galería
+                }
+            });
+
+            builder.show();
         });
 
         return binding.getRoot();
