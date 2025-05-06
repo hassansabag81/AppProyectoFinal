@@ -19,14 +19,14 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:srcCompat="@drawable/sorora" />
 
         <View
             android:id="@+id/view4"
             android:layout_width="match_parent"
-            android:layout_height="30dp" />
+            android:layout_height="10dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nombreUserLayout"
@@ -43,7 +43,8 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:inputType="text"
-                android:textColorHint="#B3000000"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#B3FFFFFF"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,7 +64,8 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:inputType="text"
-                android:textColorHint="#B3000000"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#B3FFFFFF"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,7 +85,8 @@
                 android:layout_marginEnd="10dp"
                 android:inputType="text"
                 android:maxLength="10"
-                android:textColorHint="#B3000000"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#B3FFFFFF"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -103,7 +106,8 @@
                 android:layout_marginEnd="10dp"
                 android:inputType="text"
                 android:maxLength="10"
-                android:textColorHint="#B3000000"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#B3FFFFFF"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -123,7 +127,8 @@
                 android:layout_marginEnd="10dp"
                 android:inputType="phone"
                 android:maxLength="10"
-                android:textColorHint="#B3000000"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#B3FFFFFF"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,33 +146,51 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <View
+            android:id="@+id/view24"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/imgNewBtn"
-            android:layout_width="400dp"
+            android:layout_width="250dp"
             android:layout_height="50dp"
             android:background="@drawable/botones"
+            android:backgroundTint="#D5CDCD"
             android:text="Cargar Imagen"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
+        <View
+            android:id="@+id/view21"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/verContactoBtn"
-            android:layout_width="400dp"
+            android:layout_width="250dp"
             android:layout_height="50dp"
-            android:background="@drawable/botones"
 
-            android:textColor="@color/black"
+            android:background="@drawable/botones"
+            android:backgroundTint="#D5CDCD"
             android:text="Ver Contactos"
+            android:textColor="@color/black"
             android:textSize="16sp" />
+
+        <View
+            android:id="@+id/view23"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/contactsBtn"
-            android:layout_width="400dp"
+            android:layout_width="250dp"
             android:layout_height="50dp"
-            android:background="@drawable/botones"
 
-            android:textColor="@color/black"
+            android:background="@drawable/botones"
+            android:backgroundTint="#D5CDCD"
             android:text="Registrar contacto"
+            android:textColor="@color/black"
             android:textSize="16sp" />
 
     </LinearLayout>

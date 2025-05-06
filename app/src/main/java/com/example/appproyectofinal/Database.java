@@ -20,6 +20,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_NOMBRE = "nombre";
     private static final String KEY_APELLIDO = "apellido";
+    private static final String KEY_APELLIDO_MATERNO = "apellido_materno";
     private static final String KEY_DIRECCION = "direccion";
     private static final String KEY_TELEFONO = "telefono";
 
@@ -38,6 +39,7 @@ public class Database extends SQLiteOpenHelper {
                 + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_NOMBRE + " TEXT,"
                 + KEY_APELLIDO + " TEXT,"
+                + KEY_APELLIDO_MATERNO + " TEXT,"
                 + KEY_DIRECCION + " TEXT,"
                 + KEY_TELEFONO + " TEXT)";
         db.execSQL(CREATE_USERS_TABLE);
@@ -58,7 +60,7 @@ public class Database extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertarUsuario(String nombre, String apellido, String direccion, String telefono) {
+    public boolean insertarUsuario(String nombre, String apellido, String apellidoMaterno, String direccion, String telefono) {
         if (!telefono.matches("^871\\d{7}$")) {
             return false; // Validación de número de Torreón
         }
@@ -69,6 +71,10 @@ public class Database extends SQLiteOpenHelper {
         values.put(KEY_APELLIDO, apellido);
         values.put(KEY_DIRECCION, direccion);
         values.put(KEY_TELEFONO, telefono);
+
+        if (apellidoMaterno != null && !apellidoMaterno.trim().isEmpty()) {
+            values.put("apellido_materno", apellidoMaterno.trim());
+        }
 
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
@@ -88,11 +94,13 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
-    public boolean actualizarUsuario(String nombre, String apellido, String direccion, String telefono) {
+
+    public boolean actualizarUsuario(String nombre, String apellido, String apellidoM, String direccion, String telefono) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("nombre", nombre);
         values.put("apellido", apellido);
+        values.put("apellido_materno",apellidoM);
         values.put("direccion", direccion);
         values.put("telefono", telefono);
         int result = db.update("usuarios", values, "id = (SELECT id FROM usuarios LIMIT 1)", null);

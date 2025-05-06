@@ -24,14 +24,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.content.ContentValues;
+
 import android.Manifest;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class register_user extends AppCompatActivity {
+    private static final int REQUEST_GALLERY = 10;
+    private static final int REQUEST_CAMERA = 20;
+    private Uri photoUri;
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     ImageView imagen;
     Button contacto, registrar;
-    EditText nameUser, lastnameFUser, telefonoUser, direccionUser;
+    EditText nameUser, lastnameFUser, lastnameMUser, telefonoUser, direccionUser;
     CheckBox tc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +52,7 @@ public class register_user extends AppCompatActivity {
         registrar = findViewById(R.id.registrarUser);
         nameUser = findViewById(R.id.nombreUser);
         lastnameFUser = findViewById(R.id.apellidoUser);
+        lastnameMUser = findViewById(R.id.apellidoUser2);
         direccionUser = findViewById(R.id.direccion);
         telefonoUser = findViewById(R.id.telefonoUser);
         tc = findViewById(R.id.termsConditions);
@@ -88,6 +98,7 @@ public class register_user extends AppCompatActivity {
 
                     String nombre = nameUser.getText().toString().trim();
                     String apellidoPaterno = lastnameFUser.getText().toString().trim();
+                    String apellidoMaterno = lastnameMUser.getText().toString().trim();
                     String direccion = direccionUser.getText().toString().trim();
                     String telefono = telefonoUser.getText().toString().trim();
                     boolean termsAccepted = tc.isChecked();
@@ -133,10 +144,10 @@ public class register_user extends AppCompatActivity {
                     }
 
                 Database db = new Database(register_user.this);
-                boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, direccion, telefono);
+                boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, apellidoMaterno, direccion, telefono);
 
                 if (insertado) {
-                    Toast.makeText(register_user.this, "Usuario guardado en la base de datos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(register_user.this, "Usuario registrado", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(register_user.this, "Error al guardar usuario", Toast.LENGTH_SHORT).show();
                 }
@@ -178,9 +189,47 @@ public class register_user extends AppCompatActivity {
 
 
     public void cargarImagen(View view) {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/");
-        startActivityForResult(intent.createChooser(intent, "Seleccionar"),10);
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setTitle("Seleccionar opción");
+
+        String[] opciones = {"Tomar foto", "Seleccionar de galería"};
+        builder.setItems(opciones, (dialog, which) -> {
+            if (which == 0) {
+                // Tomar foto
+                photoUri = crearImagenUri();
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(intent, REQUEST_CAMERA);
+            } else if (which == 1) {
+                // Seleccionar de galería
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Seleccionar"), 10); // Código 10 para galería
+            }
+        });
+
+        builder.show();
+    }
+
+    private void guardarImagenInterna(Uri imageUri) {
+        try {
+            // Convertir Uri a un archivo
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            FileOutputStream outputStream = openFileOutput("imagen_guardada.jpg", Context.MODE_PRIVATE);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            inputStream.close();
+            outputStream.close();
+
+            // Ahora la imagen está guardada en el almacenamiento interno
+            Toast.makeText(this, "Imagen guardada exitosamente", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void dialog(Context context){
@@ -224,12 +273,29 @@ public class register_user extends AppCompatActivity {
             }
         });
     }
+
+    private Uri crearImagenUri() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Nueva Imagen");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Desde la cámara");
+
+        return getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            Uri path = data.getData();
-            imagen.setImageURI(path);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_GALLERY && data != null) {
+                Uri path = data.getData();
+                imagen.setImageURI(path);
+                guardarImagenInterna(path);
+            } else if (requestCode == REQUEST_CAMERA) {
+                // Aquí usas el URI guardado cuando iniciaste la cámara
+                imagen.setImageURI(photoUri);
+                guardarImagenInterna(photoUri);
+            }
         }
     }
 

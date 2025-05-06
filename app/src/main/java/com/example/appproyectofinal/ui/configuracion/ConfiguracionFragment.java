@@ -1,9 +1,13 @@
 package com.example.appproyectofinal.ui.configuracion;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -46,6 +50,16 @@ public class ConfiguracionFragment extends Fragment {
         binding = FragmentConfiguracionBinding.inflate(inflater, container, false);
         setHasOptionsMenu(true);
 
+        SharedPreferences prefs = requireContext().getSharedPreferences("datos_usuario", Context.MODE_PRIVATE);
+        String uriImagen = prefs.getString("uri_imagen", null);
+
+        if (uriImagen != null) {
+            binding.imageView.setImageURI(Uri.parse(uriImagen));
+        } else {
+            binding.imageView.setImageResource(R.drawable.sorora); // imagen por defecto
+        }
+
+
         database = new Database(getContext());
 
         binding.contactsBtn.setOnClickListener(v -> {
@@ -69,6 +83,19 @@ public class ConfiguracionFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 10 && data != null) {
+            Uri uri = data.getData();
+            binding.imageView.setImageURI(uri);
+
+            // Guarda la URI en SharedPreferences
+            SharedPreferences prefs = requireContext().getSharedPreferences("datos_usuario", Context.MODE_PRIVATE);
+            String uriImagen = prefs.getString("uri_imagen", null);
+        }
     }
 
     // Método para cargar los datos del usuario
@@ -97,6 +124,12 @@ public class ConfiguracionFragment extends Fragment {
                         binding.apellidoUser.setText(apellido);
                     }
 
+                    int apellidoMColumnIndex = cursor.getColumnIndex("apellido_materno");
+                    if (apellidoColumnIndex != -1) {
+                        String apellidoMaterno = cursor.getString(apellidoMColumnIndex);
+                        binding.apellidoUser2.setText(apellidoMaterno);
+                    }
+
                     int direccionColumnIndex = cursor.getColumnIndex("direccion");
                     if (direccionColumnIndex != -1) {
                         String direccion = cursor.getString(direccionColumnIndex);
@@ -119,10 +152,11 @@ public class ConfiguracionFragment extends Fragment {
     private void guardarDatosUsuario() {
         String nombre = binding.nombreUser.getText().toString();
         String apellido = binding.apellidoUser.getText().toString();
+        String apellidoM = binding.apellidoUser2.getText().toString();
         String direccion = binding.direccionUser.getText().toString();
         String telefono = binding.telefonoUser.getText().toString();
 
-        if (database.insertarUsuario(nombre, apellido, direccion, telefono)) {
+        if (database.insertarUsuario(nombre, apellido, apellidoM, direccion, telefono)) {
             Toast.makeText(getContext(), "Datos guardados correctamente", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "Error al guardar los datos", Toast.LENGTH_SHORT).show();
@@ -138,18 +172,58 @@ public class ConfiguracionFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        String nombreTF = binding.nombreUser.getText().toString().trim();
+        String apellidoPaternoTF = binding.apellidoUser.getText().toString().trim();
+        String direccionTF = binding.direccionUser.getText().toString().trim();
+        String telefonoTF = binding.telefonoUser.getText().toString().trim();
+
+        if (nombreTF.isEmpty()) {
+            binding.nombreUser.setError("El nombre es obligatorio");
+            binding.nombreUser.requestFocus();
+            return false;
+        }
+
+        if (apellidoPaternoTF.isEmpty()) {
+            binding.apellidoUser.setError("El apellido paterno es obligatorio");
+            binding.apellidoUser.requestFocus();
+            return false;
+        }
+
+        if (direccionTF.isEmpty()) {
+            binding.direccionUser.setError("La direccion es obligatoria");
+            binding.direccionUser.requestFocus();
+            return false;
+        }
+
+        if (telefonoTF.isEmpty()) {
+            binding.telefonoUser.setError("El teléfono es obligatorio");
+            binding.telefonoUser.requestFocus();
+            return false;
+        }
+
+        if (!telefonoTF.matches("^871\\d{7}$")) {
+            binding.telefonoUser.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
+            return false;
+        }
+
+        if (telefonoTF.length() != 10 || !telefonoTF.matches("[0-9]+")) {
+            binding.telefonoUser.setError("Debe ser un número de 10 dígitos");
+            binding.telefonoUser.requestFocus();
+            return false;
+        }
         if (item.getItemId() == R.id.action_guardar) {
             String nombre = binding.nombreUser.getText().toString();
             String apellido = binding.apellidoUser.getText().toString();
+            String apellidoM = binding.apellidoUser2.getText().toString();
             String direccion = binding.direccionUser.getText().toString();
             String telefono = binding.telefonoUser.getText().toString();
 
             boolean exito;
             if (database.hayUsuarios()) {
-                exito = database.actualizarUsuario(nombre, apellido, direccion, telefono);
+                exito = database.actualizarUsuario(nombre, apellido, apellidoM, direccion, telefono);
                 Toast.makeText(getContext(), exito ? "Datos actualizados" : "Error al actualizar", Toast.LENGTH_SHORT).show();
             } else {
-                exito = database.insertarUsuario(nombre, apellido, direccion, telefono);
+                exito = database.insertarUsuario(nombre, apellido, apellidoM, direccion, telefono);
                 Toast.makeText(getContext(), exito ? "Usuario guardado" : "Error al guardar", Toast.LENGTH_SHORT).show();
             }
             return true;
