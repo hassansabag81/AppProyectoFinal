@@ -5,7 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import java.io.ByteArrayOutputStream;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -23,6 +26,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String KEY_APELLIDO_MATERNO = "apellido_materno";
     private static final String KEY_DIRECCION = "direccion";
     private static final String KEY_TELEFONO = "telefono";
+    private static final String KEY_IMAGEN_BASE64 = "imagen_base64";
 
     // Columnas de contactos de emergencia
     private static final String KEY_CONTACT_NAME = "nombre_contacto";
@@ -41,7 +45,8 @@ public class Database extends SQLiteOpenHelper {
                 + KEY_APELLIDO + " TEXT,"
                 + KEY_APELLIDO_MATERNO + " TEXT,"
                 + KEY_DIRECCION + " TEXT,"
-                + KEY_TELEFONO + " TEXT)";
+                + KEY_TELEFONO + " TEXT,"
+                + KEY_IMAGEN_BASE64 + " TEXT)";
         db.execSQL(CREATE_USERS_TABLE);
 
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
@@ -54,15 +59,15 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Eliminar las tablas si existen
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
         onCreate(db);
     }
 
-    public boolean insertarUsuario(String nombre, String apellido, String apellidoMaterno, String direccion, String telefono) {
+    // Insertar usuario con imagen Base64
+    public boolean insertarUsuario(String nombre, String apellido, String apellidoMaterno, String direccion, String telefono, String imagenBase64) {
         if (!telefono.matches("^871\\d{7}$")) {
-            return false; // Validación de número de Torreón
+            return false;
         }
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -73,13 +78,36 @@ public class Database extends SQLiteOpenHelper {
         values.put(KEY_TELEFONO, telefono);
 
         if (apellidoMaterno != null && !apellidoMaterno.trim().isEmpty()) {
-            values.put("apellido_materno", apellidoMaterno.trim());
+            values.put(KEY_APELLIDO_MATERNO, apellidoMaterno.trim());
+        }
+
+        if (imagenBase64 != null && !imagenBase64.trim().isEmpty()) {
+            values.put(KEY_IMAGEN_BASE64, imagenBase64.trim());
         }
 
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
 
         return result != -1;
+    }
+
+    // Actualizar usuario con imagen Base64
+    public boolean actualizarUsuario(String nombre, String apellido, String apellidoM, String direccion, String telefono, String imagenBase64) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_NOMBRE, nombre);
+        values.put(KEY_APELLIDO, apellido);
+        values.put(KEY_APELLIDO_MATERNO, apellidoM);
+        values.put(KEY_DIRECCION, direccion);
+        values.put(KEY_TELEFONO, telefono);
+
+        if (imagenBase64 != null && !imagenBase64.trim().isEmpty()) {
+            values.put(KEY_IMAGEN_BASE64, imagenBase64.trim());
+        }
+
+        int result = db.update(TABLE_USERS, values, KEY_ID + " = (SELECT " + KEY_ID + " FROM " + TABLE_USERS + " LIMIT 1)", null);
+        db.close();
+        return result > 0;
     }
 
     public boolean hayUsuarios() {
@@ -93,20 +121,6 @@ public class Database extends SQLiteOpenHelper {
         return existe;
     }
 
-
-
-    public boolean actualizarUsuario(String nombre, String apellido, String apellidoM, String direccion, String telefono) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("nombre", nombre);
-        values.put("apellido", apellido);
-        values.put("apellido_materno",apellidoM);
-        values.put("direccion", direccion);
-        values.put("telefono", telefono);
-        int result = db.update("usuarios", values, "id = (SELECT id FROM usuarios LIMIT 1)", null);
-        return result > 0;
-    }
-
     public boolean insertarContacto(String nombre, String telefono, String parentesco) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -116,11 +130,8 @@ public class Database extends SQLiteOpenHelper {
 
         long result = db.insert(TABLE_CONTACTS, null, values);
         db.close();
-
         return result != -1;
     }
-
-
 
     public Cursor obtenerUsuarios() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -130,5 +141,19 @@ public class Database extends SQLiteOpenHelper {
     public Cursor obtenerContactos() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_CONTACTS, null);
+    }
+
+    // Conversión Bitmap -> Base64
+    public String convertirBitmapABase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] byteArray = baos.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+    // Conversión Base64 -> Bitmap
+    public Bitmap convertirBase64ABitmap(String base64Str) {
+        byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
 }

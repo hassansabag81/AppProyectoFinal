@@ -3,6 +3,7 @@ package com.example.appproyectofinal;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -38,6 +39,9 @@ public class register_user extends AppCompatActivity {
     private Uri photoUri;
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
+
+    private String imagenBase64 = null;
+
     ImageView imagen;
     Button contacto, registrar;
     EditText nameUser, lastnameFUser, lastnameMUser, telefonoUser, direccionUser;
@@ -144,7 +148,8 @@ public class register_user extends AppCompatActivity {
                     }
 
                 Database db = new Database(register_user.this);
-                boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, apellidoMaterno, direccion, telefono);
+                boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, apellidoMaterno, direccion, telefono, imagenBase64);
+
 
                 if (insertado) {
                     Toast.makeText(register_user.this, "Usuario registrado", Toast.LENGTH_SHORT).show();
@@ -285,17 +290,29 @@ public class register_user extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
+            Uri imageUri = null;
+
             if (requestCode == REQUEST_GALLERY && data != null) {
-                Uri path = data.getData();
-                imagen.setImageURI(path);
-                guardarImagenInterna(path);
+                imageUri = data.getData();
             } else if (requestCode == REQUEST_CAMERA) {
-                // Aquí usas el URI guardado cuando iniciaste la cámara
-                imagen.setImageURI(photoUri);
-                guardarImagenInterna(photoUri);
+                imageUri = photoUri;
+            }
+
+            if (imageUri != null) {
+                imagen.setImageURI(imageUri);
+
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    Database db = new Database(this);
+                    imagenBase64 = db.convertirBitmapABase64(bitmap);  // Convierte a Base64 y guarda para insertarlo
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
+
 
     private boolean validarCampos(EditText nombre, EditText telefono, RadioGroup parentesco) {
         if (nombre.getText().toString().trim().isEmpty()){
