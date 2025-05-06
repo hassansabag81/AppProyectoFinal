@@ -18,11 +18,12 @@ import java.io.IOException;
 public class Database extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "UsuariosDB";
-    private static final int DATABASE_VERSION = 2; // Incrementado por el cambio de esquema
+    private static final int DATABASE_VERSION = 3; // Incrementado por el cambio de esquema
 
     // Tablas
     private static final String TABLE_USERS = "usuarios";
     private static final String TABLE_CONTACTS = "contactos_emergencia";
+    private static final String TABLE_ALERTS = "alertas";
 
     // Columnas de usuarios
     private static final String KEY_ID = "id";
@@ -38,6 +39,13 @@ public class Database extends SQLiteOpenHelper {
     private static final String KEY_CONTACT_NAME = "nombre_contacto";
     private static final String KEY_CONTACT_PHONE = "telefono_contacto";
     private static final String KEY_CONTACT_PARENTESCO = "parentesco";
+
+    //alertas
+    private static final String KEY_ALERT_DATE = "fecha";
+    private static final String KEY_ALERT_TIME = "hora";
+    private static final String KEY_ALERT_LOCATION = "ubicacion";
+    private static final String KEY_ALERT_LATITUDE = "latitud";
+    private static final String KEY_ALERT_LONGITUDE = "longitud";
 
     // Tamaño máximo para imágenes en Base64 (1MB)
     private static final int MAX_IMAGE_SIZE_BYTES = 1 * 1024 * 1024;
@@ -65,13 +73,34 @@ public class Database extends SQLiteOpenHelper {
                 + KEY_CONTACT_PHONE + " TEXT,"
                 + KEY_CONTACT_PARENTESCO + " TEXT)";
         db.execSQL(CREATE_CONTACTS_TABLE);
+
+        // Crear tabla de alertas (versión simplificada)
+        String CREATE_ALERTS_TABLE = "CREATE TABLE " + TABLE_ALERTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + KEY_ALERT_DATE + " TEXT,"
+                + KEY_ALERT_TIME + " TEXT,"
+                + KEY_ALERT_LOCATION + " TEXT,"
+                + KEY_ALERT_LATITUDE + " REAL,"
+                + KEY_ALERT_LONGITUDE + " REAL)";
+        db.execSQL(CREATE_ALERTS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
-            // Migración para agregar la nueva columna
             db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + KEY_IMAGEN_PATH + " TEXT");
+        }
+
+        if (oldVersion < 3) {
+            // Crear la tabla simplificada de alertas
+            String CREATE_ALERTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_ALERTS + "("
+                    + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + KEY_ALERT_DATE + " TEXT,"
+                    + KEY_ALERT_TIME + " TEXT,"
+                    + KEY_ALERT_LOCATION + " TEXT,"
+                    + KEY_ALERT_LATITUDE + " REAL,"
+                    + KEY_ALERT_LONGITUDE + " REAL)";
+            db.execSQL(CREATE_ALERTS_TABLE);
         }
     }
 
@@ -254,6 +283,31 @@ public class Database extends SQLiteOpenHelper {
         return Bitmap.createScaledBitmap(originalBitmap, maxWidth, newHeight, true);
     }
 
-    // Método para migrar imágenes antiguas (Base64) al nuevo sistema (path)
+    public long insertarAlerta(String fecha, String hora, String ubicacion,
+                               double latitud, double longitud) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ALERT_DATE, fecha);
+        values.put(KEY_ALERT_TIME, hora);
+        values.put(KEY_ALERT_LOCATION, ubicacion);
+        values.put(KEY_ALERT_LATITUDE, latitud);
+        values.put(KEY_ALERT_LONGITUDE, longitud);
+
+        long id = db.insert(TABLE_ALERTS, null, values);
+        db.close();
+        return id;
+    }
+
+    public Cursor obtenerAlertas() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(TABLE_ALERTS,
+                null, // todas las columnas
+                null, // sin where
+                null, // sin args where
+                null, // sin group by
+                null, // sin having
+                KEY_ALERT_DATE + " DESC, " + KEY_ALERT_TIME + " DESC"); // orden
+    }
 
 }

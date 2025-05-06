@@ -100,53 +100,52 @@ public class register_user extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                    String nombre = nameUser.getText().toString().trim();
-                    String apellidoPaterno = lastnameFUser.getText().toString().trim();
-                    String apellidoMaterno = lastnameMUser.getText().toString().trim();
-                    String direccion = direccionUser.getText().toString().trim();
-                    String telefono = telefonoUser.getText().toString().trim();
-                    boolean termsAccepted = tc.isChecked();
+                String nombre = nameUser.getText().toString().trim();
+                String apellidoPaterno = lastnameFUser.getText().toString().trim();
+                String apellidoMaterno = lastnameMUser.getText().toString().trim();
+                String direccion = direccionUser.getText().toString().trim();
+                String telefono = telefonoUser.getText().toString().trim();
+                boolean termsAccepted = tc.isChecked();
 
-                    if (nombre.isEmpty()) {
-                        nameUser.setError("El nombre es obligatorio");
-                        nameUser.requestFocus();
-                        return;
-                    }
+                if (nombre.isEmpty()) {
+                    nameUser.setError("El nombre es obligatorio");
+                    nameUser.requestFocus();
+                    return;
+                }
 
-                    if (apellidoPaterno.isEmpty()) {
-                        lastnameFUser.setError("El apellido paterno es obligatorio");
-                        lastnameFUser.requestFocus();
-                        return;
-                    }
+                if (apellidoPaterno.isEmpty()) {
+                    lastnameFUser.setError("El apellido paterno es obligatorio");
+                    lastnameFUser.requestFocus();
+                    return;
+                }
 
-                    if (direccion.isEmpty()) {
-                        direccionUser.setError("La direccion es obligatoria");
-                        direccionUser.requestFocus();
-                        return;
-                    }
+                if (direccion.isEmpty()) {
+                    direccionUser.setError("La direccion es obligatoria");
+                    direccionUser.requestFocus();
+                    return;
+                }
 
-                    if (telefono.isEmpty()) {
-                        telefonoUser.setError("El teléfono es obligatorio");
-                        telefonoUser.requestFocus();
-                        return;
-                    }
+                if (telefono.isEmpty()) {
+                    telefonoUser.setError("El teléfono es obligatorio");
+                    telefonoUser.requestFocus();
+                    return;
+                }
 
-                    if (!telefono.matches("^871\\d{7}$")) {
-                        telefonoUser.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
-                        return;
-                    }
+                if (!telefono.matches("^871\\d{7}$")) {
+                    telefonoUser.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
+                    return;
+                }
 
-                    if (telefono.length() != 10 || !telefono.matches("[0-9]+")) {
-                        telefonoUser.setError("Debe ser un número de 10 dígitos");
-                        telefonoUser.requestFocus();
-                        return;
-                    }
-                    /// /hbdasvbdhasb
+                if (telefono.length() != 10 || !telefono.matches("[0-9]+")) {
+                    telefonoUser.setError("Debe ser un número de 10 dígitos");
+                    telefonoUser.requestFocus();
+                    return;
+                }
 
-                    if (!termsAccepted) {
-                        Toast.makeText(register_user.this, "Debe aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                if (!termsAccepted) {
+                    Toast.makeText(register_user.this, "Debe aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Database db = new Database(register_user.this);
                 boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, apellidoMaterno, direccion, telefono, imagenBase64);
@@ -158,9 +157,9 @@ public class register_user extends AppCompatActivity {
                     Toast.makeText(register_user.this, "Error al guardar usuario", Toast.LENGTH_SHORT).show();
                 }
 
-                    Intent intent = new Intent(register_user.this, MenuActivity2.class);
-                    startActivity(intent);
-                    finish();
+                Intent intent = new Intent(register_user.this, MenuActivity2.class);
+                startActivity(intent);
+                finish();
 
             }
         });
@@ -176,7 +175,7 @@ public class register_user extends AppCompatActivity {
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.VIBRATE,
-                Manifest.permission.CAMERA
+                Manifest.permission.CAMERA,
         };
 
         boolean allGranted = true;
@@ -252,30 +251,39 @@ public class register_user extends AppCompatActivity {
                 EditText telefonoContacto = dialogView.findViewById(R.id.telefonoCE);
                 RadioGroup parentescoContacto = dialogView.findViewById(R.id.radioGroup);
 
-
-                builder.setPositiveButton("Guardar Contacto", null);
-
-                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                builder.setView(dialogView);
+                builder.setTitle("Agregar contacto de emergencia");
+                builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                        String nombre = nombreContacto.getText().toString().trim();
+                        String telefono = telefonoContacto.getText().toString().trim();
 
-                final AlertDialog dialog = builder.create();
-                dialog.show();
+                        int selectedId = parentescoContacto.getCheckedRadioButtonId();
+                        if (selectedId == -1) {
+                            Toast.makeText(register_user.this, "Seleccione un parentesco", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (validarCampos(nombreContacto, telefonoContacto, parentescoContacto)) {
-                            contactoGuardado();
-                            dialog.dismiss();
+                        String parentesco = ((android.widget.RadioButton) dialogView.findViewById(selectedId)).getText().toString();
+
+                        if (nombre.isEmpty() || telefono.isEmpty()) {
+                            Toast.makeText(register_user.this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Database db = new Database(register_user.this);
+                        boolean insertado = db.insertarContacto(nombre, telefono, parentesco);
+                        if (insertado) {
+                            Toast.makeText(register_user.this, "Contacto guardado", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, "Error: Falta campos por rellenar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(register_user.this, "Error al guardar contacto", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+
+                builder.setNegativeButton("Cancelar", null);
+                builder.show();
             }
         });
     }
@@ -326,6 +334,7 @@ public class register_user extends AppCompatActivity {
     }
 
     public void contactoGuardado(){
+        Database db = new Database(this);
         Toast.makeText(this, "Contacto guardado", Toast.LENGTH_SHORT).show();
     }
 }

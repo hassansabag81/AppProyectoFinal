@@ -336,8 +336,18 @@ public class ConfiguracionFragment extends Fragment {
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             if (validarCampos(nombreContacto, telefonoContacto, parentescoContacto)) {
-                contactoGuardado();
-                dialog.dismiss();
+                String nombre = nombreContacto.getText().toString().trim();
+                String telefono = telefonoContacto.getText().toString().trim();
+                String parentesco = "";
+
+                // Insertar el contacto en la base de datos
+                boolean insertado = database.insertarContacto(nombre, telefono, parentesco);
+                if (insertado) {
+                    Toast.makeText(getContext(), "Contacto guardado", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(getContext(), "Error al guardar contacto", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(getContext(), "Error: Falta campos por rellenar", Toast.LENGTH_SHORT).show();
             }
