@@ -34,13 +34,13 @@ public class MenuActivity2 extends AppCompatActivity {
      setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMenu2.toolbar);
-        binding.appBarMenu2.fab.setOnClickListener(new View.OnClickListener() {
+        /*binding.appBarMenu2.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavController navController = Navigation.findNavController(MenuActivity2.this, R.id.nav_host_fragment_content_menu2);
                 navController.navigate(R.id.action_main_to_alertas); // Asegúrate de que este ID esté en el nav_graph.xml
             }
-        });
+        });*/
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
