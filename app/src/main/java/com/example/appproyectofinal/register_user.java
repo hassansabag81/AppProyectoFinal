@@ -141,6 +141,7 @@ public class register_user extends AppCompatActivity {
                         telefonoUser.requestFocus();
                         return;
                     }
+                    /// /hbdasvbdhasb
 
                     if (!termsAccepted) {
                         Toast.makeText(register_user.this, "Debe aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
