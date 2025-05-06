@@ -277,9 +277,27 @@ public class ConfiguracionFragment extends Fragment {
 
 
     private boolean validarCampos(EditText nombre, EditText telefono, RadioGroup parentesco) {
-        if (nombre.getText().toString().trim().isEmpty() || telefono.getText().toString().trim().isEmpty() || parentesco.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(nombre.getContext(), "Error: falta campos por rellenar", Toast.LENGTH_SHORT).show();
+        if (nombre.getText().toString().trim().isEmpty()){
+            nombre.setError("Error: Escribe el nombre del contacto");
             return false;
+        }
+
+        if (telefono.getText().toString().trim().isEmpty()) {
+            telefono.setError("Error: Escribe un numero de telefono");
+            return false;
+        }
+        if (!telefono.getText().toString().matches("^871\\d{7}$")){
+            telefono.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
+            return false;
+        }
+        if (telefono.length() != 10 || !telefono.getText().toString().matches("[0-9]+")) {
+            telefono.setError("Debe ser un número de 10 dígitos");
+            telefono.requestFocus();
+            return false;
+        }
+
+        if(parentesco.getCheckedRadioButtonId() == -1){
+            Toast.makeText(getContext(), "Error: Elige el parentesco", Toast.LENGTH_SHORT).show();
         }
         return true;
     }

@@ -175,7 +175,7 @@ public class register_user extends AppCompatActivity {
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.VIBRATE,
-                Manifest.permission.CAMERA,
+                Manifest.permission.CAMERA
         };
 
         boolean allGranted = true;
@@ -251,39 +251,30 @@ public class register_user extends AppCompatActivity {
                 EditText telefonoContacto = dialogView.findViewById(R.id.telefonoCE);
                 RadioGroup parentescoContacto = dialogView.findViewById(R.id.radioGroup);
 
-                builder.setView(dialogView);
-                builder.setTitle("Agregar contacto de emergencia");
-                builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+
+                builder.setPositiveButton("Guardar Contacto", null);
+
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String nombre = nombreContacto.getText().toString().trim();
-                        String telefono = telefonoContacto.getText().toString().trim();
-
-                        int selectedId = parentescoContacto.getCheckedRadioButtonId();
-                        if (selectedId == -1) {
-                            Toast.makeText(register_user.this, "Seleccione un parentesco", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        String parentesco = ((android.widget.RadioButton) dialogView.findViewById(selectedId)).getText().toString();
-
-                        if (nombre.isEmpty() || telefono.isEmpty()) {
-                            Toast.makeText(register_user.this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        Database db = new Database(register_user.this);
-                        boolean insertado = db.insertarContacto(nombre, telefono, parentesco);
-                        if (insertado) {
-                            Toast.makeText(register_user.this, "Contacto guardado", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(register_user.this, "Error al guardar contacto", Toast.LENGTH_SHORT).show();
-                        }
+                        dialog.dismiss();
                     }
                 });
 
-                builder.setNegativeButton("Cancelar", null);
-                builder.show();
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (validarCampos(nombreContacto, telefonoContacto, parentescoContacto)) {
+                            contactoGuardado();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(context, "Error: Falta campos por rellenar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
     }
@@ -334,7 +325,6 @@ public class register_user extends AppCompatActivity {
     }
 
     public void contactoGuardado(){
-        Database db = new Database(this);
         Toast.makeText(this, "Contacto guardado", Toast.LENGTH_SHORT).show();
     }
 }
