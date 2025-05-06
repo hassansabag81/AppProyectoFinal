@@ -2,21 +2,27 @@ package com.example.appproyectofinal.ui.configuracion;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -24,22 +30,35 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.appproyectofinal.Database;
 import com.example.appproyectofinal.R;
 import com.example.appproyectofinal.databinding.FragmentConfiguracionBinding;
 
-import android.util.Log;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class ConfiguracionFragment extends Fragment {
 
-    private Database database;
+    private static final int REQUEST_GALLERY = 10;
+    private static final int REQUEST_CAMERA = 20;
+    private static final int PERMISSION_REQUEST_CODE = 1001;
 
+    private Database database;
     private FragmentConfiguracionBinding binding;
+    private Uri photoUri;
+    private String imagenBase64 = null;
 
     public ConfiguracionFragment() {
         // Constructor público vacío requerido
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -48,139 +67,188 @@ public class ConfiguracionFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentConfiguracionBinding.inflate(inflater, container, false);
-        setHasOptionsMenu(true);
-
-        SharedPreferences prefs = requireContext().getSharedPreferences("datos_usuario", Context.MODE_PRIVATE);
-        String uriImagen = prefs.getString("uri_imagen", null);
-
-        if (uriImagen != null) {
-            binding.imageView.setImageURI(Uri.parse(uriImagen));
-        } else {
-            binding.imageView.setImageResource(R.drawable.sorora); // imagen por defecto
-        }
-
 
         database = new Database(getContext());
+        verificarPermisos();
+
+        // Cargar imagen desde la base de datos
+        cargarImagenUsuario();
+
+        // Cargar datos del usuario
+        cargarDatosUsuario();
 
         binding.contactsBtn.setOnClickListener(v -> {
             DialogoNewContact();
         });
 
-        cargarDatosUsuario();
-
-
-
         binding.imgNewBtn.setOnClickListener(view -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setTitle("Seleccionar opción");
-
-            String[] opciones = {"Tomar foto", "Seleccionar de galería"};
-            builder.setItems(opciones, (dialog, which) -> {
-                if (which == 0) {
-                    // Tomar foto
-                    //photoUri = crearImagenUri();
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    //startActivityForResult(intent, REQUEST_CAMERA);
-                } else if (which == 1) {
-                    // Seleccionar de galería
-                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    intent.setType("image/*");
-                    startActivityForResult(Intent.createChooser(intent, "Seleccionar"), 10); // Código 10 para galería
-                }
-            });
-
-            builder.show();
+            mostrarDialogoSeleccionImagen();
         });
 
         return binding.getRoot();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    private void cargarImagenUsuario() {
+        if (database.hayUsuarios()) {
+            Cursor cursor = database.obtenerUsuarios();
+            if (cursor.moveToFirst()) {
+                int imagenColumnIndex = cursor.getColumnIndex("imagen");
+                if (imagenColumnIndex != -1) {
+                    imagenBase64 = cursor.getString(imagenColumnIndex);
+                    if (imagenBase64 != null && !imagenBase64.isEmpty()) {
+                        Bitmap bitmap = convertirBase64ABitmap(imagenBase64);
+                        binding.imageView.setImageBitmap(bitmap);
+                    } else {
+                        binding.imageView.setImageResource(R.drawable.sorora);
+                    }
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    private void mostrarDialogoSeleccionImagen() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Seleccionar opción");
+
+        String[] opciones = {"Tomar foto", "Seleccionar de galería"};
+        builder.setItems(opciones, (dialog, which) -> {
+            if (which == 0) {
+                // Tomar foto
+                photoUri = crearImagenUri();
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(intent, REQUEST_CAMERA);
+            } else if (which == 1) {
+                // Seleccionar de galería
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Seleccionar"), REQUEST_GALLERY);
+            }
+        });
+        builder.show();
+    }
+
+    private Uri crearImagenUri() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Nueva Imagen");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Desde la cámara");
+        return requireActivity().getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 10 && data != null) {
-            Uri uri = data.getData();
-            binding.imageView.setImageURI(uri);
 
-            // Guarda la URI en SharedPreferences
-            SharedPreferences prefs = requireContext().getSharedPreferences("datos_usuario", Context.MODE_PRIVATE);
-            String uriImagen = prefs.getString("uri_imagen", null);
+        if (resultCode == RESULT_OK) {
+            Uri imageUri = null;
+
+            if (requestCode == REQUEST_GALLERY && data != null) {
+                imageUri = data.getData();
+            } else if (requestCode == REQUEST_CAMERA) {
+                imageUri = photoUri;
+            }
+
+            if (imageUri != null) {
+                binding.imageView.setImageURI(imageUri);
+                // Guardar solo la URI como string en la base de datos
+                String uriString = imageUri.toString();
+                // Actualizar la base de datos con la URI
+                actualizarURIImagenEnDB(uriString);
+            }
         }
     }
 
-    // Método para cargar los datos del usuario
-    private void cargarDatosUsuario() {
-            if (database.hayUsuarios()) {
-                Cursor cursor = database.obtenerUsuarios();
-                if (cursor.moveToFirst()) {
-                    // Imprimir los nombres de las columnas para depuración
-                    for (int i = 0; i < cursor.getColumnCount(); i++) {
-                        Log.d("Database", "Columna " + i + ": " + cursor.getColumnName(i));
-                    }
+    private void actualizarURIImagenEnDB(String uriString) {
+        // Implementa este método según tu estructura de base de datos
+        // Ejemplo: database.actualizarURIImagenUsuario(uriString);
+    }
 
-                    // Asegúrate de que las columnas "nombre", "apellido", "direccion", "telefono" existan en la base de datos
-                    int nombreColumnIndex = cursor.getColumnIndex("nombre");
-                    if (nombreColumnIndex != -1) {
-                        String nombre = cursor.getString(nombreColumnIndex);
-                        binding.nombreUser.setText(nombre);
-                    } else {
-                        Log.e("Database", "Columna 'nombre' no encontrada");
-                    }
+    private String convertirBitmapABase64(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
 
-                    // Repite esto para las demás columnas
-                    int apellidoColumnIndex = cursor.getColumnIndex("apellido");
-                    if (apellidoColumnIndex != -1) {
-                        String apellido = cursor.getString(apellidoColumnIndex);
-                        binding.apellidoUser.setText(apellido);
-                    }
+    private Bitmap convertirBase64ABitmap(String base64String) {
+        byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
 
-                    int apellidoMColumnIndex = cursor.getColumnIndex("apellido_materno");
-                    if (apellidoColumnIndex != -1) {
-                        String apellidoMaterno = cursor.getString(apellidoMColumnIndex);
-                        binding.apellidoUser2.setText(apellidoMaterno);
-                    }
+    private void verificarPermisos() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                    int direccionColumnIndex = cursor.getColumnIndex("direccion");
-                    if (direccionColumnIndex != -1) {
-                        String direccion = cursor.getString(direccionColumnIndex);
-                        binding.direccionUser.setText(direccion);
-                    }
+            requestPermissions(new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, PERMISSION_REQUEST_CODE);
+        }
+    }
 
-                    int telefonoColumnIndex = cursor.getColumnIndex("telefono");
-                    if (telefonoColumnIndex != -1) {
-                        String telefono = cursor.getString(telefonoColumnIndex);
-                        binding.telefonoUser.setText(telefono);
-                    }
-                cursor.close();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permisos concedidos
+            } else {
+                Toast.makeText(getContext(), "Se necesitan los permisos para continuar", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void cargarDatosUsuario() {
+        if (database.hayUsuarios()) {
+            Cursor cursor = database.obtenerUsuarios();
+            if (cursor.moveToFirst()) {
+                // Imprimir los nombres de las columnas para depuración
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    Log.d("Database", "Columna " + i + ": " + cursor.getColumnName(i));
+                }
+
+                // Asegúrate de que las columnas "nombre", "apellido", "direccion", "telefono" existan en la base de datos
+                int nombreColumnIndex = cursor.getColumnIndex("nombre");
+                if (nombreColumnIndex != -1) {
+                    String nombre = cursor.getString(nombreColumnIndex);
+                    binding.nombreUser.setText(nombre);
+                } else {
+                    Log.e("Database", "Columna 'nombre' no encontrada");
+                }
+
+                int apellidoColumnIndex = cursor.getColumnIndex("apellido");
+                if (apellidoColumnIndex != -1) {
+                    String apellido = cursor.getString(apellidoColumnIndex);
+                    binding.apellidoUser.setText(apellido);
+                }
+
+                int apellidoMColumnIndex = cursor.getColumnIndex("apellido_materno");
+                if (apellidoMColumnIndex != -1) {
+                    String apellidoMaterno = cursor.getString(apellidoMColumnIndex);
+                    binding.apellidoUser2.setText(apellidoMaterno);
+                }
+
+                int direccionColumnIndex = cursor.getColumnIndex("direccion");
+                if (direccionColumnIndex != -1) {
+                    String direccion = cursor.getString(direccionColumnIndex);
+                    binding.direccionUser.setText(direccion);
+                }
+
+                int telefonoColumnIndex = cursor.getColumnIndex("telefono");
+                if (telefonoColumnIndex != -1) {
+                    String telefono = cursor.getString(telefonoColumnIndex);
+                    binding.telefonoUser.setText(telefono);
+                }
+            }
+            cursor.close();
         } else {
             Toast.makeText(getContext(), "No hay usuarios registrados", Toast.LENGTH_SHORT).show();
         }
     }
-
-    // Método para guardar los cambios en los campos
-    private void guardarDatosUsuario() {
-        String nombre = binding.nombreUser.getText().toString();
-        String apellido = binding.apellidoUser.getText().toString();
-        String apellidoM = binding.apellidoUser2.getText().toString();
-        String direccion = binding.direccionUser.getText().toString();
-        String telefono = binding.telefonoUser.getText().toString();
-
-        if (database.insertarUsuario(nombre, apellido, apellidoM, direccion, telefono)) {
-            Toast.makeText(getContext(), "Datos guardados correctamente", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "Error al guardar los datos", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // Llamado cuando se presiona el botón de guardar
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -228,6 +296,7 @@ public class ConfiguracionFragment extends Fragment {
             binding.telefonoUser.requestFocus();
             return false;
         }
+
         if (item.getItemId() == R.id.action_guardar) {
             String nombre = binding.nombreUser.getText().toString();
             String apellido = binding.apellidoUser.getText().toString();
@@ -237,10 +306,10 @@ public class ConfiguracionFragment extends Fragment {
 
             boolean exito;
             if (database.hayUsuarios()) {
-                exito = database.actualizarUsuario(nombre, apellido, apellidoM, direccion, telefono);
+                exito = database.actualizarUsuario(nombre, apellido, apellidoM, direccion, telefono, imagenBase64);
                 Toast.makeText(getContext(), exito ? "Datos actualizados" : "Error al actualizar", Toast.LENGTH_SHORT).show();
             } else {
-                exito = database.insertarUsuario(nombre, apellido, apellidoM, direccion, telefono);
+                exito = database.insertarUsuario(nombre, apellido, apellidoM, direccion, telefono, imagenBase64);
                 Toast.makeText(getContext(), exito ? "Usuario guardado" : "Error al guardar", Toast.LENGTH_SHORT).show();
             }
             return true;
@@ -275,7 +344,6 @@ public class ConfiguracionFragment extends Fragment {
         });
     }
 
-
     private boolean validarCampos(EditText nombre, EditText telefono, RadioGroup parentesco) {
         if (nombre.getText().toString().trim().isEmpty()){
             nombre.setError("Error: Escribe el nombre del contacto");
@@ -290,7 +358,7 @@ public class ConfiguracionFragment extends Fragment {
             telefono.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
             return false;
         }
-        if (telefono.length() != 10 || !telefono.getText().toString().matches("[0-9]+")) {
+        if (telefono.getText().toString().length() != 10 || !telefono.getText().toString().matches("[0-9]+")) {
             telefono.setError("Debe ser un número de 10 dígitos");
             telefono.requestFocus();
             return false;
@@ -298,6 +366,7 @@ public class ConfiguracionFragment extends Fragment {
 
         if(parentesco.getCheckedRadioButtonId() == -1){
             Toast.makeText(getContext(), "Error: Elige el parentesco", Toast.LENGTH_SHORT).show();
+            return false;
         }
         return true;
     }
@@ -306,4 +375,9 @@ public class ConfiguracionFragment extends Fragment {
         Toast.makeText(getContext(), "Contacto guardado", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }
