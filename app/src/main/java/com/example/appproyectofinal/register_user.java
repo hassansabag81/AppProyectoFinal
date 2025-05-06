@@ -265,8 +265,6 @@ public class register_user extends AppCompatActivity {
                         if (validarCampos(nombreContacto, telefonoContacto, parentescoContacto)) {
                             contactoGuardado();
                             dialog.dismiss();
-                        } else {
-                            Toast.makeText(context, "Error: Falta campos por rellenar", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -300,9 +298,27 @@ public class register_user extends AppCompatActivity {
     }
 
     private boolean validarCampos(EditText nombre, EditText telefono, RadioGroup parentesco) {
-        if (nombre.getText().toString().trim().isEmpty() || telefono.getText().toString().trim().isEmpty() || parentesco.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(nombre.getContext(), "Error: falta campos por rellenar", Toast.LENGTH_SHORT).show();
+        if (nombre.getText().toString().trim().isEmpty()){
+            nombre.setError("Error: Escribe el nombre del contacto");
             return false;
+        }
+
+        if (telefono.getText().toString().trim().isEmpty()) {
+            telefono.setError("Error: Escribe un numero de telefono");
+            return false;
+        }
+        if (!telefono.getText().toString().matches("^871\\d{7}$")){
+            telefono.setError("Debe ser un número válido de Torreón (871XXXXXXX)");
+            return false;
+        }
+        if (telefono.length() != 10 || !telefono.getText().toString().matches("[0-9]+")) {
+            telefonoUser.setError("Debe ser un número de 10 dígitos");
+            telefonoUser.requestFocus();
+            return false;
+        }
+
+        if(parentesco.getCheckedRadioButtonId() == -1){
+            Toast.makeText(this, "Error: Elige el parentesco", Toast.LENGTH_SHORT).show();
         }
         return true;
     }
