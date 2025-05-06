@@ -40,11 +40,11 @@ import com.google.android.gms.location.LocationServices;
 import android.location.Location;
 import android.Manifest;
 
-
-
-
-
 import androidx.core.app.NotificationCompat;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -219,8 +219,10 @@ public class main extends Fragment {
                     if (location != null) {
                         String mensaje = "¡Emergencia! Esta es mi ubicación: https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
                         sendSmsToContacts(mensaje);
+
+                        // Guardar la alerta en la base de datos
+                        saveAlertToDatabase(location);
                     } else {
-                        // Si es null, pedimos actualización activa
                         LocationRequest locationRequest = LocationRequest.create()
                                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                                 .setInterval(1000)
@@ -233,6 +235,9 @@ public class main extends Fragment {
                                 if (updatedLocation != null) {
                                     String mensaje = "¡Emergencia! Esta es mi ubicación: https://maps.google.com/?q=" + updatedLocation.getLatitude() + "," + updatedLocation.getLongitude();
                                     sendSmsToContacts(mensaje);
+
+                                    // Guardar la alerta en la base de datos
+                                    saveAlertToDatabase(updatedLocation);
                                 } else {
                                     Toast.makeText(getContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
                                 }
@@ -240,6 +245,29 @@ public class main extends Fragment {
                         }, Looper.getMainLooper());
                     }
                 });
+    }
+
+    private void saveAlertToDatabase(Location location) {
+        // Obtener fecha y hora actual
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+        String currentTime = timeFormat.format(new Date());
+
+        // Obtener la ubicación aproximada (puedes mejorar esto con Geocoder)
+        String locationName = "Ubicación: " + location.getLatitude() + ", " + location.getLongitude();
+
+        // Guardar en la base de datos
+        Database db = new Database(getContext());
+        db.insertarAlerta(
+                currentDate,
+                currentTime,
+                locationName,
+                location.getLatitude(),
+                location.getLongitude()
+        );
+
+        Toast.makeText(getContext(), "Alerta guardada en historial", Toast.LENGTH_SHORT).show();
     }
 
     private void sendSmsToContacts(String mensaje) {

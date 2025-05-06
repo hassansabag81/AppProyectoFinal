@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/white">
 
-    <TextView
-        android:id="@+id/history_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Historial de Alertas"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="8dp" />
+    <!-- Título del historial -->
+<TextView
+android:id="@+id/history_title"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Historial de Alertas"
+android:textSize="24sp"
+android:textStyle="bold"
+android:textColor="@color/black"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/historialAl"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <!-- Barra de búsqueda (opcional) -->
+<SearchView
+android:id="@+id/search_view"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginBottom="8dp"
+android:queryHint="Buscar alertas..."
+android:iconifiedByDefault="false" />
 
-</LinearLayout>
+    <!-- RecyclerView para mostrar las alertas -->
+<androidx.recyclerview.widget.RecyclerView
+android:id="@+id/recyclerViewAlertas"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:clipToPadding="false"
+android:paddingTop="8dp"
+android:paddingBottom="16dp"
+android:scrollbars="vertical"
+app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+tools:listitem="@layout/itemhistorial" />  <!-- Referencia al layout del item -->
+
+    <!-- TextView para cuando no hay alertas -->
+<TextView
+android:id="@+id/empty_view"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:text="No hay alertas registradas"
+android:textSize="18sp"
+android:gravity="center"
+android:visibility="gone" />  <!-- Inicialmente oculto -->
+
+    </LinearLayout>
