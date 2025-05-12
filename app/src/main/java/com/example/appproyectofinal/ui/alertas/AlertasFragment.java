@@ -110,6 +110,8 @@ public class AlertasFragment extends Fragment {
             void bind(AlertaItem item) {
                 binding.callTime.setText(item.getFecha() + " " + item.getHora());
                 binding.location.setText(item.getUbicacion());
+                binding.latitude.setText("lat: " + item.latitud);
+                binding.longitude.setText("lon: " +item.longitud);
 
                 // Puedes agregar más lógica aquí, como manejar clics en los items
             }

@@ -255,7 +255,7 @@ public class main extends Fragment {
         String currentTime = timeFormat.format(new Date());
 
         // Obtener la ubicación aproximada (puedes mejorar esto con Geocoder)
-        String locationName = "Ubicación: " + location.getLatitude() + ", " + location.getLongitude();
+        String locationName = "https://maps.google.com/?q=" + location.getLatitude() + ", " + location.getLongitude();
 
         // Guardar en la base de datos
         Database db = new Database(getContext());

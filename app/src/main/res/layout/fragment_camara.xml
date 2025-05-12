@@ -16,7 +16,7 @@
         android:id="@+id/imgFoto"
         android:layout_width="286dp"
         android:layout_height="288dp"
-        android:layout_marginLeft="60dp"
+        android:layout_gravity="center"
         android:scaleType="centerCrop" />
 
     <View

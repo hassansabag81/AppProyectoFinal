@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--Los colores mmorado y naranja son representativos para el feminismo, ya que el morado   representa
+        la lucha de las mujeres por la igualdad y contra la discriminación-->
+
+    <!-- Simboliza el fin de la violencia contra las mujeres y niñas-->
+    <gradient android:type="linear" android:angle="90"
+        android:startColor="#70C667" android:endColor="#DB1A1A"/>
+</shape>

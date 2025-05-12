@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Fecha y hora"
-            android:textColor="#666"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <!-- Ubicación -->
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Ubicación: No disponible"
-            android:textColor="#888"
+            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <!-- Latitud y Longitud -->
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lat: 0.0"
-                android:textColor="#888"
+                android:textColor="@color/black"
                 android:textSize="14sp"/>
 
             <TextView
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Lon: 0.0"
-                android:textColor="#888"
+                android:textColor="@color/black"
                 android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
