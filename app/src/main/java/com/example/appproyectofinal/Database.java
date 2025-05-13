@@ -310,4 +310,29 @@ public class Database extends SQLiteOpenHelper {
                 KEY_ALERT_DATE + " DESC, " + KEY_ALERT_TIME + " DESC"); // orden
     }
 
+    public String obtenerNombreUsuario() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String nombreCompleto = "";
+
+        Cursor cursor = db.query(TABLE_USERS,
+                new String[]{KEY_NOMBRE, KEY_APELLIDO, KEY_APELLIDO_MATERNO},
+                null, null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            String nombre = cursor.getString(0);
+            String apellidoP = cursor.getString(1);
+            String apellidoM = cursor.getString(2);
+
+            nombreCompleto = nombre + " " + apellidoP;
+            if (apellidoM != null && !apellidoM.isEmpty()) {
+                nombreCompleto += " " + apellidoM;
+            }
+        }
+
+        cursor.close();
+        db.close();
+        return nombreCompleto;
+    }
+
 }
+

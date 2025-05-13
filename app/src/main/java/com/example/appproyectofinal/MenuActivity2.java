@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
 import com.example.appproyectofinal.ui.alertas.AlertasFragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,17 +35,21 @@ public class MenuActivity2 extends AppCompatActivity {
      setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMenu2.toolbar);
-        /*binding.appBarMenu2.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavController navController = Navigation.findNavController(MenuActivity2.this, R.id.nav_host_fragment_content_menu2);
-                navController.navigate(R.id.action_main_to_alertas); // Asegúrate de que este ID esté en el nav_graph.xml
-            }
-        });*/
-        DrawerLayout drawer = binding.drawerLayout;
+
+        // Obtener el nombre de la base de datos
+        Database dbHelper = new Database(this);
+        String nombreUsuario = dbHelper.obtenerNombreUsuario();
+        dbHelper.close();
+
+        // Asignar el nombre al TextView del encabezado
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        navigationView.post(() -> {
+            View headerView = navigationView.getHeaderView(0);
+            TextView tvNombre = headerView.findViewById(R.id.tagNombre);
+            tvNombre.setText(nombreUsuario);
+        });
+
+        DrawerLayout drawer = binding.drawerLayout;
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.main)
                 .setOpenableLayout(drawer)
@@ -91,4 +96,8 @@ public class MenuActivity2 extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+
+
+
 }
