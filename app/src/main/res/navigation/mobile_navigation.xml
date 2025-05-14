@@ -33,7 +33,11 @@
     <fragment
         android:id="@+id/configuracion"
         android:name="com.example.appproyectofinal.ui.configuracion.ConfiguracionFragment"
-        android:label="Configuracion" />
+        android:label="Configuracion" >
+        <action
+            android:id="@+id/action_configuracion_to_contactosFragment"
+            app:destination="@id/contactosFragment" />
+    </fragment>
     <fragment
         android:id="@+id/alertas"
         android:name="com.example.appproyectofinal.ui.alertas.AlertasFragment"
@@ -57,7 +61,10 @@
         android:label="Aviso de privacidad"
         android:name="com.example.appproyectofinal.ui.privacity.PrivacityFragment"
         android:layout = "@layout/fragment_privacity"/>
-
+    <fragment
+        android:id="@+id/contactosFragment"
+        android:name="com.example.appproyectofinal.ui.contactos.ContactosFragment"
+        android:label="ContactosFragment" />
 
 
 </navigation>

@@ -5,9 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -32,13 +30,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.appproyectofinal.Database;
+import com.example.appproyectofinal.MenuActivity2;
 import com.example.appproyectofinal.R;
 import com.example.appproyectofinal.databinding.FragmentConfiguracionBinding;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 public class ConfiguracionFragment extends Fragment {
 
@@ -55,6 +56,29 @@ public class ConfiguracionFragment extends Fragment {
         // Constructor público vacío requerido
     }
 
+    private static final String PROFILE_IMAGE_NAME = "user_profile.jpg";
+
+    private void guardarImagenLocal(Bitmap bitmap) {
+        try {
+            FileOutputStream fos = requireContext().openFileOutput(PROFILE_IMAGE_NAME, Context.MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Bitmap cargarImagenLocal() {
+        try {
+            FileInputStream fis = requireContext().openFileInput(PROFILE_IMAGE_NAME);
+            Bitmap bitmap = BitmapFactory.decodeStream(fis);
+            fis.close();
+            return bitmap;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +91,10 @@ public class ConfiguracionFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentConfiguracionBinding.inflate(inflater, container, false);
+
+        binding.mostrarContactos.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_configuracion_to_contactosFragment);
+        });
 
         database = new Database(getContext());
         verificarPermisos();
@@ -89,21 +117,30 @@ public class ConfiguracionFragment extends Fragment {
     }
 
     private void cargarImagenUsuario() {
-        if (database.hayUsuarios()) {
-            Cursor cursor = database.obtenerUsuarios();
-            if (cursor.moveToFirst()) {
-                int imagenColumnIndex = cursor.getColumnIndex("imagen");
-                if (imagenColumnIndex != -1) {
-                    imagenBase64 = cursor.getString(imagenColumnIndex);
-                    if (imagenBase64 != null && !imagenBase64.isEmpty()) {
-                        Bitmap bitmap = convertirBase64ABitmap(imagenBase64);
-                        binding.imageView.setImageBitmap(bitmap);
-                    } else {
-                        binding.imageView.setImageResource(R.drawable.sorora);
+        Bitmap bitmap = cargarImagenLocal();
+        if (bitmap != null) {
+            binding.imageView.setImageBitmap(bitmap);
+        } else {
+            binding.imageView.setImageResource(R.drawable.sorora);
+
+            // Opcional: Cargar desde base de datos si existe (para compatibilidad)
+            if (database.hayUsuarios()) {
+                Cursor cursor = database.obtenerUsuarios();
+                if (cursor.moveToFirst()) {
+                    int imagenIndex = cursor.getColumnIndex("imagen");
+                    if (imagenIndex != -1) {
+                        String base64 = cursor.getString(imagenIndex);
+                        if (base64 != null && !base64.isEmpty()) {
+                            bitmap = convertirBase64ABitmap(base64);
+                            if (bitmap != null) {
+                                binding.imageView.setImageBitmap(bitmap);
+                                guardarImagenLocal(bitmap); // Migrar a almacenamiento local
+                            }
+                        }
                     }
                 }
+                cursor.close();
             }
-            cursor.close();
         }
     }
 
@@ -142,39 +179,63 @@ public class ConfiguracionFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            Uri imageUri = null;
+            Bitmap bitmap = null;
 
-            if (requestCode == REQUEST_GALLERY && data != null) {
-                imageUri = data.getData();
-            } else if (requestCode == REQUEST_CAMERA) {
-                imageUri = photoUri;
-            }
+            try {
+                if (requestCode == REQUEST_GALLERY && data != null) {
+                    Uri imageUri = data.getData();
+                    bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
+                } else if (requestCode == REQUEST_CAMERA) {
+                    if (photoUri != null) {
+                        bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), photoUri);
+                    }
+                }
 
-            if (imageUri != null) {
-                binding.imageView.setImageURI(imageUri);
-                // Guardar solo la URI como string en la base de datos
-                String uriString = imageUri.toString();
-                // Actualizar la base de datos con la URI
-                actualizarURIImagenEnDB(uriString);
+                if (bitmap != null) {
+                    bitmap = redimensionarBitmap(bitmap, 800, 800);
+                    binding.imageView.setImageBitmap(bitmap);
+                    guardarImagenLocal(bitmap);
+
+                    imagenBase64 = convertirBitmapABase64(bitmap);
+                    Toast.makeText(getContext(), "Imagen actualizada", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // Para depuración
+                Toast.makeText(getContext(), "Error al procesar imagen", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void actualizarURIImagenEnDB(String uriString) {
-        // Implementa este método según tu estructura de base de datos
-        // Ejemplo: database.actualizarURIImagenUsuario(uriString);
+    private Bitmap redimensionarBitmap(Bitmap bitmap, int maxWidth, int maxHeight) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        if (width > maxWidth || height > maxHeight) {
+            float ratio = Math.min((float)maxWidth/width, (float)maxHeight/height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+            return Bitmap.createScaledBitmap(bitmap, width, height, true);
+        }
+        return bitmap;
     }
 
     private String convertirBitmapABase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        if (bitmap == null) return null;
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+        byte[] imageBytes = baos.toByteArray();
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
 
     private Bitmap convertirBase64ABitmap(String base64String) {
-        byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        try {
+            byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void verificarPermisos() {
@@ -306,8 +367,12 @@ public class ConfiguracionFragment extends Fragment {
 
             boolean exito;
             if (database.hayUsuarios()) {
+                // Si necesitas mantener la imagen en la base de datos
                 exito = database.actualizarUsuario(nombre, apellido, apellidoM, direccion, telefono, imagenBase64);
-                Toast.makeText(getContext(), exito ? "Datos actualizados" : "Error al actualizar", Toast.LENGTH_SHORT).show();
+                if (exito) {
+                    Toast.makeText(getContext(), "Datos actualizados", Toast.LENGTH_SHORT).show();
+                    ((MenuActivity2) getActivity()).recreate();
+                }
             } else {
                 exito = database.insertarUsuario(nombre, apellido, apellidoM, direccion, telefono, imagenBase64);
                 Toast.makeText(getContext(), exito ? "Usuario guardado" : "Error al guardar", Toast.LENGTH_SHORT).show();
@@ -379,10 +444,6 @@ public class ConfiguracionFragment extends Fragment {
             return false;
         }
         return true;
-    }
-
-    public void contactoGuardado(){
-        Toast.makeText(getContext(), "Contacto guardado", Toast.LENGTH_SHORT).show();
     }
 
     @Override

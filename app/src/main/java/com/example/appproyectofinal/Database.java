@@ -36,9 +36,9 @@ public class Database extends SQLiteOpenHelper {
     private static final String KEY_IMAGEN_PATH = "imagen_path"; // Nueva columna
 
     // Columnas de contactos de emergencia
-    private static final String KEY_CONTACT_NAME = "nombre_contacto";
-    private static final String KEY_CONTACT_PHONE = "telefono_contacto";
-    private static final String KEY_CONTACT_PARENTESCO = "parentesco";
+    public static final String KEY_CONTACT_NAME = "nombre_contacto";
+    public static final String KEY_CONTACT_PHONE = "telefono_contacto";
+    public static final String KEY_CONTACT_PARENTESCO = "parentesco";
 
     //alertas
     private static final String KEY_ALERT_DATE = "fecha";

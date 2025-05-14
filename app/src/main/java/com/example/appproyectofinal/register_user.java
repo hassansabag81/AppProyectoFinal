@@ -3,7 +3,10 @@ package com.example.appproyectofinal;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,18 +28,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.content.ContentValues;
-
 import android.Manifest;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class register_user extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 10;
     private static final int REQUEST_CAMERA = 20;
-    private Uri photoUri;
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
 
@@ -46,6 +46,36 @@ public class register_user extends AppCompatActivity {
     Button contacto, registrar;
     EditText nameUser, lastnameFUser, lastnameMUser, telefonoUser, direccionUser;
     CheckBox tc;
+
+    private static final String PROFILE_IMAGE_NAME = "user_profile.jpg";
+
+    private void guardarImagenLocal(Bitmap bitmap) {
+        try {
+            // Reducir calidad para ahorrar espacio
+            FileOutputStream fos = openFileOutput(PROFILE_IMAGE_NAME, Context.MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos); // 80% de calidad
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                // Permisos concedidos, puedes proceder
+            } else {
+                Toast.makeText(this, "Se necesitan los permisos para cambiar la imagen", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +99,13 @@ public class register_user extends AppCompatActivity {
             return;
         }
 
+        if (existeImagenLocal()) {
+            Bitmap bitmap = cargarImagenLocal();
+            if (bitmap != null) {
+                imagen.setImageBitmap(bitmap);
+                imagenBase64 = db.convertirBitmapABase64(bitmap);
+            }
+        }
 
         dialog(register_user.this);
 
@@ -147,20 +184,33 @@ public class register_user extends AppCompatActivity {
                     return;
                 }
 
-                Database db = new Database(register_user.this);
-                boolean insertado = db.insertarUsuario(nombre, apellidoPaterno, apellidoMaterno, direccion, telefono, imagenBase64);
+                if (imagenBase64 == null || imagenBase64.isEmpty()) {
+                    Toast.makeText(register_user.this, "Debe seleccionar una imagen de perfil", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
+                if (!existeImagenLocal()) {
+                    Toast.makeText(register_user.this, "Debe seleccionar una imagen de perfil", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Database db = new Database(register_user.this);
+                boolean insertado = db.insertarUsuario(
+                        nombre,
+                        apellidoPaterno,
+                        apellidoMaterno,
+                        direccion,
+                        telefono,
+                        imagenBase64 // Opcional, puedes pasar null si ya no lo necesitas
+                );
 
                 if (insertado) {
                     Toast.makeText(register_user.this, "Usuario registrado", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(register_user.this, MenuActivity2.class));
+                    finish();
                 } else {
                     Toast.makeText(register_user.this, "Error al guardar usuario", Toast.LENGTH_SHORT).show();
                 }
-
-                Intent intent = new Intent(register_user.this, MenuActivity2.class);
-                startActivity(intent);
-                finish();
-
             }
         });
 
@@ -176,6 +226,8 @@ public class register_user extends AppCompatActivity {
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.VIBRATE,
                 Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
 
         boolean allGranted = true;
@@ -194,47 +246,55 @@ public class register_user extends AppCompatActivity {
 
 
     public void cargarImagen(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setTitle("Seleccionar opción");
+        // Verificar permisos primero
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-        String[] opciones = {"Tomar foto", "Seleccionar de galería"};
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
+                    PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Seleccionar imagen de perfil");
+
+        String[] opciones = {"Tomar foto", "Elegir de galería"};
         builder.setItems(opciones, (dialog, which) -> {
-            if (which == 0) {
-                // Tomar foto
-                photoUri = crearImagenUri();
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(intent, REQUEST_CAMERA);
-            } else if (which == 1) {
-                // Seleccionar de galería
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent, "Seleccionar"), 10); // Código 10 para galería
+            if (which == 0) { // Tomar foto
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                // Versión simplificada que funciona en la mayoría de dispositivos
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+                }
+            } else { // Elegir de galería
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto, REQUEST_GALLERY);
             }
         });
-
         builder.show();
     }
 
-    private void guardarImagenInterna(Uri imageUri) {
+    private Bitmap cargarImagenLocal() {
         try {
-            // Convertir Uri a un archivo
-            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-            FileOutputStream outputStream = openFileOutput("imagen_guardada.jpg", Context.MODE_PRIVATE);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            inputStream.close();
-            outputStream.close();
-
-            // Ahora la imagen está guardada en el almacenamiento interno
-            Toast.makeText(this, "Imagen guardada exitosamente", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
+            FileInputStream fis = openFileInput(PROFILE_IMAGE_NAME);
+            Bitmap bitmap = BitmapFactory.decodeStream(fis);
+            fis.close();
+            return bitmap;
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
+    }
+
+    private boolean existeImagenLocal() {
+        File file = new File(getFilesDir(), PROFILE_IMAGE_NAME);
+        return file.exists();
     }
 
     public void dialog(Context context){
@@ -288,53 +348,64 @@ public class register_user extends AppCompatActivity {
         });
     }
 
-    private Uri crearImagenUri() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Nueva Imagen");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Desde la cámara");
-
-        return getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            Uri imageUri = null;
+            Bitmap bitmap = null;
 
-            if (requestCode == REQUEST_GALLERY && data != null) {
-                imageUri = data.getData();
-            } else if (requestCode == REQUEST_CAMERA) {
-                imageUri = photoUri;
-            }
+            try {
+                if (requestCode == REQUEST_GALLERY && data != null) {
+                    // Para galería
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            if (imageUri != null) {
-                imagen.setImageURI(imageUri);
+                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    if (cursor != null) {
+                        cursor.moveToFirst();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String picturePath = cursor.getString(columnIndex);
+                        cursor.close();
 
-                try {
-                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    Database db = new Database(this);
-                    imagenBase64 = db.convertirBitmapABase64(bitmap);  // Convierte a Base64 y guarda para insertarlo
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        bitmap = BitmapFactory.decodeFile(picturePath);
+                    }
+                } else if (requestCode == REQUEST_CAMERA && data != null) {
+                    // Para cámara - versión simplificada pero funcional
+                    Bundle extras = data.getExtras();
+                    bitmap = (Bitmap) extras.get("data");
+
+                    // Rotar la imagen si es necesario (opcional)
+                    //bitmap = rotarImagenSiNecesario(bitmap);
                 }
+
+                if (bitmap != null) {
+                    // Redimensionar para evitar problemas de memoria
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 600, 600, true);
+
+                    imagen.setImageBitmap(bitmap);
+
+                    // Guardar localmente
+                    guardarImagenLocal(bitmap);
+
+                    // Convertir a Base64 para la base de datos
+                    Database db = new Database(this);
+                    imagenBase64 = db.convertirBitmapABase64(bitmap);
+
+                    Toast.makeText(this, "Imagen cargada correctamente", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error al procesar la imagen", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-
-    private boolean validarCampos(EditText nombre, EditText telefono, RadioGroup parentesco) {
-        if (nombre.getText().toString().trim().isEmpty() || telefono.getText().toString().trim().isEmpty() || parentesco.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(nombre.getContext(), "Error: falta campos por rellenar", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
+    private Bitmap rotarImagenSiNecesario(Bitmap bitmap) {
+        // Esta es una implementación básica, puedes mejorarla según tus necesidades
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90); // Rotar 90 grados (ajusta según necesidad)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
-    public void contactoGuardado(){
-        Database db = new Database(this);
-        Toast.makeText(this, "Contacto guardado", Toast.LENGTH_SHORT).show();
-    }
 }
