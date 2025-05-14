@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.appproyectofinal.Database;
 import com.example.appproyectofinal.R;
 import com.example.appproyectofinal.databinding.FragmentContactosBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 public class ContactosFragment extends Fragment {
 
@@ -60,6 +62,9 @@ public class ContactosFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (adapter != null && adapter.cursor != null) {
+            adapter.cursor.close();
+        }
         if (database != null) {
             database.close();
         }
@@ -68,7 +73,6 @@ public class ContactosFragment extends Fragment {
 
     // Clase Adapter interna
     private class ContactosAdapter extends RecyclerView.Adapter<ContactosAdapter.ContactoViewHolder> {
-
         private Cursor cursor;
 
         public ContactosAdapter(Cursor cursor) {
@@ -86,6 +90,7 @@ public class ContactosFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ContactoViewHolder holder, int position) {
             if (cursor.moveToPosition(position)) {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(Database.KEY_ID));
                 String nombre = cursor.getString(cursor.getColumnIndexOrThrow(Database.KEY_CONTACT_NAME));
                 String telefono = cursor.getString(cursor.getColumnIndexOrThrow(Database.KEY_CONTACT_PHONE));
                 String parentesco = cursor.getString(cursor.getColumnIndexOrThrow(Database.KEY_CONTACT_PARENTESCO));
@@ -93,6 +98,13 @@ public class ContactosFragment extends Fragment {
                 holder.tvNombre.setText(nombre);
                 holder.tvTelefono.setText(telefono);
                 holder.tvParentesco.setText(parentesco);
+
+                holder.btnEliminar.setOnClickListener(v -> {
+                    // Eliminar el contacto
+                    database.eliminarContacto(id);
+                    // Actualizar la lista
+                    cargarContactos();
+                });
             }
         }
 
@@ -103,12 +115,14 @@ public class ContactosFragment extends Fragment {
 
         class ContactoViewHolder extends RecyclerView.ViewHolder {
             TextView tvNombre, tvTelefono, tvParentesco;
+            ImageButton btnEliminar;
 
             public ContactoViewHolder(@NonNull View itemView) {
                 super(itemView);
                 tvNombre = itemView.findViewById(R.id.tvNombreContacto);
                 tvTelefono = itemView.findViewById(R.id.tvTelefonoContacto);
                 tvParentesco = itemView.findViewById(R.id.tvParentesco);
+                btnEliminar = itemView.findViewById(R.id.btnEliminar);
             }
         }
     }

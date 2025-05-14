@@ -22,11 +22,11 @@ public class Database extends SQLiteOpenHelper {
 
     // Tablas
     private static final String TABLE_USERS = "usuarios";
-    private static final String TABLE_CONTACTS = "contactos_emergencia";
+    public static final String TABLE_CONTACTS = "contactos_emergencia";
     private static final String TABLE_ALERTS = "alertas";
 
     // Columnas de usuarios
-    private static final String KEY_ID = "id";
+    public static final String KEY_ID = "id";
     private static final String KEY_NOMBRE = "nombre";
     private static final String KEY_APELLIDO = "apellido";
     private static final String KEY_APELLIDO_MATERNO = "apellido_materno";
@@ -332,6 +332,13 @@ public class Database extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return nombreCompleto;
+    }
+
+    public boolean eliminarContacto(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_CONTACTS, KEY_ID + " = ?", new String[]{String.valueOf(id)});
+        db.close();
+        return result > 0;
     }
 
 }

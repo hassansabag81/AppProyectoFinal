@@ -64,7 +64,7 @@
     <fragment
         android:id="@+id/contactosFragment"
         android:name="com.example.appproyectofinal.ui.contactos.ContactosFragment"
-        android:label="ContactosFragment" />
+        android:label="Contactos" />
 
 
 </navigation>
