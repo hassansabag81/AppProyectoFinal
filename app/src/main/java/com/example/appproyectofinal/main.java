@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -43,6 +44,7 @@ import android.Manifest;
 import androidx.core.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -102,11 +104,29 @@ public class main extends Fragment {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1001) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Permiso para enviar SMS concedido", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Permiso para enviar SMS denegado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.SEND_SMS, Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
+        }
 
         vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -276,14 +296,15 @@ public class main extends Fragment {
 
         if (cursor.moveToFirst()) {
             do {
-                String telefono = "";
                 int colIndex = cursor.getColumnIndex("telefono_contacto");
                 if (colIndex != -1) {
-                    telefono = cursor.getString(colIndex);
+                    String telefono = cursor.getString(colIndex);
 
-                    Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + telefono));
-                    smsIntent.putExtra("sms_body", mensaje);
-                    startActivity(smsIntent);
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+                        enviarSMS(telefono, mensaje);
+                    } else {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.SEND_SMS}, 1001);
+                    }
 
                 } else {
                     Log.e("ERROR", "La columna telefono_contacto no existe en el cursor");
@@ -297,22 +318,29 @@ public class main extends Fragment {
     }
 
     private void enviarSMS(String numero, String mensaje) {
-        try {
-            SmsManager sms = SmsManager.getDefault();
-            sms.sendTextMessage(numero, null, mensaje, null, null);
+        try {SmsManager smsManager = SmsManager.getDefault();
+
+            // Divide el mensaje en partes si es demasiado largo
+            ArrayList<String> parts = smsManager.divideMessage(mensaje);
+
+            // Envía el SMS directamente sin intervención del usuario
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                smsManager.sendMultipartTextMessage(
+                        numero,
+                        null,
+                        parts,
+                        null,
+                        null
+                );
+            } else {
+                for (String part : parts) {
+                    smsManager.sendTextMessage(numero, null, part, null, null);
+                }
+            }
+            Log.d("SMS", "Mensaje enviado a " + numero);
         } catch (Exception e) {
             Toast.makeText(getContext(), "Error enviando SMS a " + numero + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
-
-    // Método para enviar un SMS (simulado) a un número de emergencia con la ubicación
-    private void sendSmsToEmergencyContact(String phoneNumber, String location) {
-        String message = "Estoy en una emergencia, mi ubicación es: " + location;
-
-        Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phoneNumber));
-
-        smsIntent.putExtra("sms_body", message);
-        startActivity(smsIntent);
-    }
 }
